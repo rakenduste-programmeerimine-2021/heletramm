@@ -1,7 +1,7 @@
 # Heletramm
 
 ## Autorid
-**Martin Kilgi, Mait Jurask**
+***Martin Kilgi, Mait Jurask***
 
 ## Idee
 Live chat app, mis on suunatud developeritele ning on krüpteeritud. Funktsionaalsuseks on 1-1 suhtlus ning grupi põhine suhtlus.
