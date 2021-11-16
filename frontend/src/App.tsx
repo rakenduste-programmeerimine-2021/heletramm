@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar"
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Home from "./pages/Home";
 
 const App = () => {
 
@@ -15,12 +16,13 @@ const App = () => {
        <ChakraProvider theme={theme}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navbar />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Register />} />
           </Routes>
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
           </BrowserRouter>
-        <Navbar/>
       </ChakraProvider>
     </div>
 
