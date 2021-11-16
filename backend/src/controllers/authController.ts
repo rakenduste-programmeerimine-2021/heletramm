@@ -11,9 +11,6 @@ export const GetUsers = async (req: Request, res: Response) => {
     res.json(users);
 }
 
-interface LoginResponse {
-    token: string
-}
 
 export const Login = async (req: Request, res: Response) => {
     const {email, password} = req.body;
@@ -26,13 +23,13 @@ export const Login = async (req: Request, res: Response) => {
     const compareRst = await compare(password, user.password);
     if (!compareRst) throw Error("Wrong password");
 
-    const token = sign({id: user.id, nickname: user.nickname}, process.env.JWT_SECRET);
+    const token = sign({id: user.id, nickname: user.nickname}, process.env.JWT_SECRET, {expiresIn: "5m"});
 
-    const response: LoginResponse = {
-        token
-    };
+    const refresh_token = sign({id: user.id}, process.env.REFRESH_SECRET, {expiresIn: "7d"});
 
-    res.json(response);
+    res.cookie("jid", refresh_token, {httpOnly: true});
+
+    res.json({token});
 }
 
 export const Register = async (req: Request, res: Response) => {
