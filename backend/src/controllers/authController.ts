@@ -3,12 +3,51 @@ import {getConnection, getRepository} from 'typeorm';
 import {User} from '../model/User';
 import {hash, genSalt, compare} from 'bcrypt';
 import {sign} from 'jsonwebtoken';
+import {TokenUser} from '../middleware/authorization';
+import {verify} from 'jsonwebtoken';
+
+interface RefreshTokenResponse {
+    success: boolean,
+    token?: string
+}
 
 export const GetUsers = async (req: Request, res: Response) => {
     const connection = getConnection();
     const userRepository = connection.getRepository(User);
     const users = await userRepository.find();
     res.json(users);
+}
+
+export const RefreshToken = async (req: Request, res: Response) => {
+
+    const token = req.cookies.jid;
+
+    //Kui tokenit pole siis 2ra tee midagi
+    if (!token) {
+        const response: RefreshTokenResponse = {
+            success: false,
+            token: null
+        }
+        res.send(response);
+    }
+
+    const decoded = verify(token, process.env.REFRESH_SECRET) as TokenUser;
+    //Kui ei kehti siis lase uuesti sisse logida/ 2ra saada midagi tagasi
+    if (!decoded) {
+        const response: RefreshTokenResponse = {
+            success: false,
+            token: null
+        }
+        res.send(response);
+    }
+    
+    const response: RefreshTokenResponse = {
+        success: true,
+        token: sign(decoded, process.env.JWT_SECRET)
+    }
+
+    res.send(response);
+
 }
 
 
