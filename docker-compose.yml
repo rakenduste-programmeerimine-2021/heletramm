@@ -16,25 +16,24 @@ services:
     ports:
       - 8080:8080
 
-  #frontend:
-    #build:
-      #context: "./frontend"
-    #ports:
-      #- "3000:3000"
-    #volumes:
-      #- "./frontend:/home/node/app:delegated"
-    #command: "run start"
-    #container_name: "frontend"
+  frontend:
+    build:
+      context: "./frontend"
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./frontend:/home/node/app:delegated"
+    command: "run start"
+    container_name: "frontend"
 
-
-  #backend:
-    #depends_on:
-      #- pgdb 
-    #build:
-      #context: "./backend"
-    #ports:
-      #- "3001:3000"
-    #volumes:
-      #- "./backend-node:/home/node/app:delegated"
-    #command: "run start"
-    #container_name: "backend-node"
+  backend:
+    depends_on:
+      - pgdb 
+    build:
+      context: "./backend"
+    ports:
+      - "3001:3001"
+    volumes:
+      - "./backend:/home/node/app:delegated"
+    command: "run start"
+    container_name: "backend"
