@@ -1,18 +1,20 @@
 import {serverSetup} from '../src/index';
 import chai, {expect} from 'chai';
 import chaiHttp from 'chai-http';
-import { createConnection } from 'typeorm';
+import {createConnection, Repository} from 'typeorm';
 import {Express} from 'express';
+import { User } from '../src/model/User';
+
 
 chai.use(chaiHttp);
 
-const testAccount = {
-    nickname: "testuser",
-    email: "test@test1234.ee",
-    password: "test1234!"
-}
+const testAccount = new User();
+testAccount.nickname =  "testuser";
+testAccount.email = "test@test1234.ee";
+testAccount.password = "test1234!";
 
 let app: Express;
+let userRepository: Repository<User>
 
 before((done) => {
     createConnection({
@@ -21,10 +23,11 @@ before((done) => {
         port: 5432,
         username: "postgres",
         password: "root",
-        database: "heletrammdb",
+        database: "heletrammtestdb",
         synchronize: true,
         entities: ["src/model/*.ts"]
     }).then((connection) => {
+        userRepository = connection.getRepository(User);
         console.log("Successfully connected to test db");
         app = serverSetup();
         done();
@@ -40,18 +43,53 @@ describe("Testing if server works", () => {
     })
 })
 
-describe("Authentication testing", () => {
-    it('Can create account', (done) => {
+describe('Registration test', () => {
+    before((done) => {
+        userRepository.clear().then(() => {
+            done();
+        })
+    })
+
+    it('Can register', (done) => {
         chai.request("http://localhost:3002")
         .post('/register')
         .send({
-            nickname: "testuser",
-            email: "test@test1234.ee",
-            password: "test1234!"
+            nickname: testAccount.nickname,
+            email: testAccount.email,
+            password: testAccount.password
         })
         .end((err, res) => {
             expect(res).to.have.status(200);
             done();
         })
+    })
+    
+    const agent = chai.request.agent("http://localhost:3002");
+
+    it('Login', (done) => {
+        agent.post('/login')
+        .send({
+            email: "test@test1234.ee",
+            password: "test1234!"
+        })
+        .end((err, res) => {
+            expect(res).to.have.cookie('jid');
+            expect(res.body.token).to.not.be.null;
+            expect(res).to.have.status(200);
+            done();
+        })
+    })
+
+    it('Refresh_token', (done) => {
+        agent.get('/refresh_token').end((err, res) => {
+            console.log(res);
+            expect(res.body.success).to.be.true;
+            done();
+        })
+    })
+
+    after((done) => {
+        agent.close();
+        done()
     })
 })

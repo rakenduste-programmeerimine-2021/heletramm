@@ -68,8 +68,9 @@ export const Login = async (req: Request, res: Response) => {
 
     res.cookie("jid", refresh_token, {httpOnly: true});
 
-    res.json({token});
+    res.status(200).send({token});
 }
+
 
 export const Register = async (req: Request, res: Response) => {
     const {nickname, email, password} = req.body;
