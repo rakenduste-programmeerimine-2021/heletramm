@@ -60,7 +60,12 @@ export const Login = async (req: Request, res: Response) => {
     if (!user) throw Error("User doesn't exist");
 
     const compareRst = await compare(password, user.password);
-    if (!compareRst) throw Error("Wrong password");
+    if (!compareRst) {
+        res.status(401).send({
+            error: "Wrong password"
+        })
+        return;
+    }
 
     const token = sign({id: user.id, nickname: user.nickname}, process.env.JWT_SECRET, {expiresIn: "5m"});
 

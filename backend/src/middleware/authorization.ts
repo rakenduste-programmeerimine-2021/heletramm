@@ -7,7 +7,7 @@ export interface TokenUser {
     nickname: string
 }
 
-interface ReqWithUser extends Request {
+export interface ReqWithUser extends Request {
     user?: TokenUser
 }
 
