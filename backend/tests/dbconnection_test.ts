@@ -1,6 +1,20 @@
 import {serverSetup} from '../src/index';
 import chai, {expect} from 'chai';
 import chaiHttp from 'chai-http';
+//   <<<<<<< apitestsetup
+//   import { createConnection } from 'typeorm';
+//   import {Express} from 'express';
+
+//   chai.use(chaiHttp);
+
+//   const testAccount = {
+//       nickname: "testuser",
+//       email: "test@test1234.ee",
+//       password: "test1234!"
+//   }
+
+//   let app: Express;
+//   =======
 import {createConnection, Repository} from 'typeorm';
 import {Express} from 'express';
 import { User } from '../src/model/User';
@@ -23,6 +37,10 @@ before((done) => {
         port: 5432,
         username: "postgres",
         password: "root",
+//         database: "heletrammdb",
+//         synchronize: true,
+//         entities: ["src/model/*.ts"]
+//     }).then((connection) => {
         database: "heletrammtestdb",
         synchronize: true,
         entities: ["src/model/*.ts"]
@@ -43,6 +61,12 @@ describe("Testing if server works", () => {
     })
 })
 
+// describe("Authentication testing", () => {
+//     it('Can create account', (done) => {
+//         chai.request("http://localhost:3002")
+//         .post('/register')
+//         .send({
+//             nickname: "testuser",
 describe('Registration test', () => {
     before((done) => {
         userRepository.clear().then(() => {
@@ -73,6 +97,7 @@ describe('Registration test', () => {
             password: "test1234!"
         })
         .end((err, res) => {
+
             expect(res).to.have.cookie('jid');
             expect(res.body.token).to.not.be.null;
             expect(res).to.have.status(200);
