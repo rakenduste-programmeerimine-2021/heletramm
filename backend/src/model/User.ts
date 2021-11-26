@@ -13,7 +13,4 @@ export class User {
     @Column({type: "varchar"})
     password: string
 
-    @ManyToMany(() => Room, (room) => room.users)
-    @JoinTable()
-    rooms: Room[]
 }

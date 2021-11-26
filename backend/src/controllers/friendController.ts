@@ -5,14 +5,14 @@ import { Friend } from "../model/Friend";
 import { User } from "../model/User";
 
 export const AddFriend = async (req: ReqWithUser, res: Response) => {
-    const {id} = req.body;
+    const {friend_id} = req.body;
 
     const connection = getConnection();
     const userRepository = connection.getRepository(User);
     const friendRepository = connection.getRepository(Friend);
 
-    const friendToAdd = await userRepository.findOne({id});
-    if (!friendToAdd) throw Error("Friend not found (not possible)");
+    const friendToAdd = await userRepository.findOne({id: friend_id});
+    if (!friendToAdd) throw Error("");
 
     const me = await userRepository.findOne({id: req.user.id});
     if (!me) throw Error("Me not found");

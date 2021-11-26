@@ -20,7 +20,7 @@ export class Room {
     })
     type: RoomType;
 
-    @ManyToMany(() => User, (user) => user.rooms)
+    @ManyToMany(() => User)
     @JoinTable()
     users: User[]
 }

@@ -3,7 +3,6 @@ import {
   ChakraProvider,
   theme,
 } from "@chakra-ui/react"
-import Navbar from "./components/Navbar"
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
