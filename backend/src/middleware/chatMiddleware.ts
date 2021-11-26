@@ -10,21 +10,31 @@ import {RoomType} from '../model/Room';
 *** Before production fix those me and friend errors
 */
 
+export const InitChat = async (req: ReqWithUser, res: Response, next: NextFunction) => {
+    const {room_type} = req.body;
+
+    if (room_type === RoomType.PRIVATE) {
+        InitPrivateChat(req, res, next);
+    }
+    else if (room_type === RoomType.GROUP) {
+        //InitGroupChat
+    }
+}
+
 export const InitPrivateChat = async (req: ReqWithUser, res: Response, next: NextFunction) => {
     const {friend_id} = req.body;
 
     const roomRepository = getConnection().getRepository(Room);
     const userRepository = getConnection().getRepository(User);
 
-    const me = await userRepository.findOne({id: req.user!.id});
-    //This isn't production code
-    if (!me) throw Error("Me not found");
+    const me = await userRepository.findOne({id: req.user.id});
+    if (!me) throw Error("Something went wrong (me not found: InitPrivateChat)");
 
     const friend = await userRepository.findOne({id: friend_id});
-    //This too
-    if (!friend) throw Error("Friend not found");
+    if (!friend) throw Error("Something went wrong (friend not found: InitPrivateChat)");
 
     const room = await roomRepository.find({users: [me, friend]});
+
     if (!room) {
         const newRoom = new Room();
         newRoom.name = me.nickname + friend.nickname + RoomType.PRIVATE;

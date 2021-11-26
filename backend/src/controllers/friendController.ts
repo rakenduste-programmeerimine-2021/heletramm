@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { createQueryBuilder, getConnection } from "typeorm";
+import { getConnection } from "typeorm";
 import { ReqWithUser } from "../middleware/authorization";
 import { Friend } from "../model/Friend";
 import { User } from "../model/User";
@@ -14,7 +14,7 @@ export const AddFriend = async (req: ReqWithUser, res: Response) => {
     const friendToAdd = await userRepository.findOne({id});
     if (!friendToAdd) throw Error("Friend not found (not possible)");
 
-    const me = await userRepository.findOne({id: req.user!.id});
+    const me = await userRepository.findOne({id: req.user.id});
     if (!me) throw Error("Me not found");
 
 
@@ -36,7 +36,7 @@ export const MyFriends = async (req: ReqWithUser, res: Response) => {
     const userRepository = connection.getRepository(User);
     const friendRepository = connection.getRepository(Friend);
 
-    const me = await userRepository.findOne({id: req.user!.id});
+    const me = await userRepository.findOne({id: req.user.id});
     if (!me) throw Error("Me not found (not possible)");
 
 
