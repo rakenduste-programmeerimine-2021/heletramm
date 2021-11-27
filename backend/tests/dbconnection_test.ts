@@ -6,6 +6,7 @@ import { User } from '../src/model/User';
 import http from 'http';
 
 
+
 chai.use(chaiHttp);
 
 const testAccount = new User();
@@ -15,6 +16,7 @@ testAccount.password = "test1234!";
 
 
 let app: http.Server;
+
 let userRepository: Repository<User>
 
 before((done) => {
@@ -89,7 +91,6 @@ describe('Registration test', () => {
     it('Refresh_token', (done) => {
         agent.get('/refresh_token').end((err, res) => {
             if (err) throw Error(err);
-
             expect(res.body.success).to.be.true;
             done();
         })
