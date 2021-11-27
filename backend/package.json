@@ -7,8 +7,7 @@
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
-    "start": "nodemon src/index.ts",
-    //"start": "nodemon --ignore tests/*.ts src/index.ts",
+    "start": "nodemon --ignore tests/*.ts src/index.ts",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts'"
   },
   "keywords": [],
@@ -39,7 +38,7 @@
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
-    "socket.io": "^4.3.2",
+    "socket.io": "^4.4.0",
     "typeorm": "^0.2.39"
   }
 }
