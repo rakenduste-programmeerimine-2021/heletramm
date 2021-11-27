@@ -15,6 +15,7 @@ const App = () => {
     <div>
        <ChakraProvider theme={theme}>
         <BrowserRouter>
+          <Navbar />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Register />} />

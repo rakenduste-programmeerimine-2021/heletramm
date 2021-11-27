@@ -7,7 +7,7 @@
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
-    "start": "nodemon --ignore tests/*.ts src/index.ts",
+    "start": "nodemon src/index.ts",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts'"
   },
   "keywords": [],

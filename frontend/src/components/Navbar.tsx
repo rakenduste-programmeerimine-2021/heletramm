@@ -11,8 +11,8 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
   
   return (
     <div>
-      <Flex>
-        <Flex position="fixed" top="1rem" right="1rem" left="1rem" align="center" backgroundColor="burlywood">
+      <Flex marginBottom={8}>
+        <Flex position="fixed" top="1rem" right="1rem" left="1rem" align="center" backgroundColor="burlywood" borderRadius={8}>
             <Link href="/" passHref marginLeft="2rem">
               <Button as="a" variant="ghost" aria-label="Home" my={5} w="100%">
                 Home
