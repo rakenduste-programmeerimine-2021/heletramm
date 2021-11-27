@@ -30,10 +30,11 @@ const TestChat: React.FC = () => {
     const [message, setMessage] = useState<string>("");
     const [friends, setFriends] = useState<User[]>([]);
     const [connectedToRoom, setConnectedToRoom] = useState<boolean>(false);
+    const [roomName, setRoomName] = useState<string>("");
 
     const getFriends = useCallback(async () => {
         const response = await axios.get<FriendsResponse>("http://localhost:3001/friend/me", {headers: {
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywibmlja25hbWUiOiJ0ZXN0dXNlcjMiLCJpYXQiOjE2Mzc5MzA2NTYsImV4cCI6MTYzNzkzNDI1Nn0.HbCDwmpWz6LAusKvoBMGTFixguQTleuP5SR1gk2wj3I'
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywibmlja25hbWUiOiJ0ZXN0MyIsImlhdCI6MTYzNzk5NjQxNCwiZXhwIjoxNjM4MDAwMDE0fQ.Fyp2xvxsU6tge-qK8YeSIwTb1hNHVMJqs4D4mDXKf2w'
         }});
         const users = response.data.friends.map((friend) => friend.user);
         console.log(users);
@@ -44,22 +45,25 @@ const TestChat: React.FC = () => {
         getFriends()
     }, [getFriends])
 
-    const socket = io("http://localhost:3001");
+    const socket = io("http://localhost:3001", {auth: {
+        token: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywibmlja25hbWUiOiJ0ZXN0MyIsImlhdCI6MTYzNzk5NjQxNCwiZXhwIjoxNjM4MDAwMDE0fQ.Fyp2xvxsU6tge-qK8YeSIwTb1hNHVMJqs4D4mDXKf2w'
+    }});
 
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
         if (connectedToRoom) {
-            socket.emit('message', message);
+            socket.emit('message', roomName, message);
             setMessage("");
         }
     }
 
     const connectToChat = async (friend_id: number) => {
         const roomResponse = await axios.post<Room>('http://localhost:3001/connect', {friend_id, room_type: 'private'}, {headers: {
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywibmlja25hbWUiOiJ0ZXN0dXNlcjMiLCJpYXQiOjE2Mzc5MzA2NTYsImV4cCI6MTYzNzkzNDI1Nn0.HbCDwmpWz6LAusKvoBMGTFixguQTleuP5SR1gk2wj3I'
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywibmlja25hbWUiOiJ0ZXN0MyIsImlhdCI6MTYzNzk5NjQxNCwiZXhwIjoxNjM4MDAwMDE0fQ.Fyp2xvxsU6tge-qK8YeSIwTb1hNHVMJqs4D4mDXKf2w'
         }})
         console.log(roomResponse.data);
         socket.emit('join-room', roomResponse.data.name);
+        setRoomName(roomResponse.data.name);
         setConnectedToRoom(true);
     }
 

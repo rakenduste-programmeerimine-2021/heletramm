@@ -22,7 +22,6 @@ export const serverSetup = () => {
     expressApp.use(authRoutes);
     expressApp.use(chatRoutes);
     expressApp.use('/friend', friendRoutes);
-
     expressApp.get('/', (req: Request, res: Response) => {
         res.send("This is the default path");
     })
@@ -35,7 +34,9 @@ export const serverSetup = () => {
     const io = new Server(app, {
         cors: {
             origin: "http://localhost:3000",
-            methods: ["GET", "POST"]
+            methods: ["GET", "POST"],
+            credentials: true
+
         }
     });
 
