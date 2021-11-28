@@ -13,9 +13,9 @@ const MessageFeed: React.FC<MessageFeedProps> = () => {
     const messages = ['esimene item', 'teine item', 'kolmas item', 'neljas item'];
 
     return (
-        <Flex>
+        <Flex mr={8} justifyContent="flex-end">
             <ScrollableFeed>
-                <Box padding={4}>
+                <Box padding={4} justifyContent="right">
                     {messages?.map((message: string, i) => <Message key={i} message={message}></Message>)}
                 </Box>
             </ScrollableFeed>

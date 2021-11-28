@@ -73,7 +73,7 @@ export const Login = async (req: Request, res: Response) => {
 
     res.cookie("jid", refresh_token, {httpOnly: true});
 
-    res.status(200).send({token});
+    res.status(200).send({token}).end();
 }
 
 

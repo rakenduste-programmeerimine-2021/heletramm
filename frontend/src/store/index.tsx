@@ -1,12 +1,11 @@
 import React from 'react';
 import { createContext, useReducer, useEffect } from 'react';
-import { authreducer } from './reducer';
+import { authReducer } from './reducer';
 import combineReducers from "react-combine-reducers";
 import axios from 'axios';
 
 const initialAuth = {
     token: null,
-    user: null
 }
 
 const [combinedReducer, initialState] = combineReducers({

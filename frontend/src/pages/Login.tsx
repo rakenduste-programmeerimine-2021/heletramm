@@ -1,13 +1,43 @@
-import React from 'react';
+import React, {useState, useContext} from 'react';
+import { Context } from '../store';
 import { FormControl, FormLabel, FormHelperText} from '@chakra-ui/form-control';
 import {Flex, Box, Heading, Button, Link, Divider, chakra} from "@chakra-ui/react";
 import { FaLock, FaMailBulk } from 'react-icons/fa';
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
+import axios from "axios";
+import { loginUser } from '../store/actions';
+import { useNavigate } from "react-router-dom";
 
 const UserAlt = chakra(FaMailBulk);
 const Lock = chakra(FaLock);
 
 const Login = () => {
+
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [token, setToken] = useState("");
+    const [state, dispatch] = useContext(Context);
+
+    const handleSubmit = (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        axios.post("http://localhost:3001/login", {
+            email: email,
+            password: password
+        }).then((response) => {
+            const resp = response.data;
+            console.log(JSON.stringify(resp));
+            if (response.data.token != undefined) {
+                navigate("/");
+            }
+            setToken(response.data.token);
+        }, (error: Error) => {
+            console.log(error);
+        });
+
+        dispatch(loginUser(token));
+    }
 
     
 
@@ -19,7 +49,7 @@ const Login = () => {
                         <Heading>Login</Heading>
                     </Box>
                     <Box my={4} textAlign="left">
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <FormControl id="email" isRequired mb={4}>
                                 <FormLabel>Email address</FormLabel>
                                 <InputGroup>
@@ -27,7 +57,7 @@ const Login = () => {
                                         pointerEvents="none"
                                         children={<UserAlt color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="email" />
+                                    <Input outlineColor="blackAlpha.800" type="email" onChange={e => {setEmail(e.currentTarget.value)}} />
                                 </InputGroup>
                                 <FormHelperText>We'll never share your email</FormHelperText>
                             </FormControl>
@@ -38,7 +68,7 @@ const Login = () => {
                                         pointerEvents="none"
                                         children={<Lock color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="password" />
+                                    <Input outlineColor="blackAlpha.800" type="password" onChange={e => {setPassword(e.currentTarget.value)}} />
                                 </InputGroup>
                                 <FormHelperText>Don't ever share your password with anyone</FormHelperText>
                             </FormControl>

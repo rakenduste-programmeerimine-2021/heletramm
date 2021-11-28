@@ -5,6 +5,7 @@ import {Flex, Box, Heading, Button, Stack, Link, Divider, chakra} from '@chakra-
 import { FaLock, FaMailBulk, FaUser } from 'react-icons/fa';
 import { BsPerson } from "react-icons/bs";
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
+import { useNavigate } from 'react-router';
 
 const Person = chakra(BsPerson);
 const Lock = chakra(FaLock);
@@ -14,26 +15,24 @@ const User = chakra(FaUser);
 const Register: React.FC = () => {
 
     const [username, setUsername] = useState("");
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleSubmit = () => {
+    const navigate = useNavigate();
 
-        const user = {
-            username: username,
-            firstname: firstName,
-            lastname: lastName,
-            email: email,
-            password: password
-        }
+    const handleSubmit = (e: React.SyntheticEvent) => {
+        e.preventDefault();
 
         axios.post("http://localhost:3001/register", {
-            user: user
+            nickname: username,
+            email: email,
+            password: password 
         }).then((response) => {
             const resp = response.data;
             console.log(JSON.stringify(resp));
+            if (response.data != undefined) {
+                navigate("/login");
+            }
         }, (error) => {
             console.log(error);
         });
@@ -59,27 +58,7 @@ const Register: React.FC = () => {
                                         pointerEvents="none"
                                         children={<User color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="text" onChange={e => {setUsername(e.target.value)}} />
-                            </InputGroup>
-                        </FormControl>
-                        <FormControl id="firstname" isRequired mb={4}>
-                            <FormLabel>First name</FormLabel>
-                            <InputGroup>
-                                    <InputLeftElement
-                                        pointerEvents="none"
-                                        children={<Person color="gray.300" />}
-                                    />
-                                    <Input outlineColor="blackAlpha.800" type="text" onChange={e => {setFirstName(e.target.value)}} />
-                            </InputGroup>
-                        </FormControl>
-                        <FormControl id="lastname" isRequired mb={4}>
-                            <FormLabel>Last name</FormLabel>
-                            <InputGroup>
-                                <InputLeftElement
-                                    pointerEvents="none"
-                                    children={<Person color="gray.300" />}
-                                />
-                                <Input outlineColor="blackAlpha.800" type="email" onChange={e => {setLastName(e.target.value)}} />
+                                    <Input outlineColor="blackAlpha.800" type="text" onChange={e => {setUsername(e.currentTarget.value)}} />
                             </InputGroup>
                         </FormControl>
                         <FormControl id="email" isRequired mb={4}>
@@ -89,7 +68,7 @@ const Register: React.FC = () => {
                                     pointerEvents="none"
                                     children={<Mail color="gray.300" />}
                                 />
-                                <Input outlineColor="blackAlpha.800" type="email" onChange={e => {setEmail(e.target.value)}} />
+                                <Input outlineColor="blackAlpha.800" type="email" onChange={e => {setEmail(e.currentTarget.value)}} />
                             </InputGroup>
                         </FormControl>
                         <FormControl id="password" isRequired mb={8}>
@@ -99,7 +78,7 @@ const Register: React.FC = () => {
                                     pointerEvents="none"
                                     children={<Lock color="gray.300" />}
                                 />
-                                <Input outlineColor="blackAlpha.800" type="password" onChange={e => {setPassword(e.target.value)}} />
+                                <Input outlineColor="blackAlpha.800" type="password" onChange={e => {setPassword(e.currentTarget.value)}} />
                             </InputGroup>
                         </FormControl>
                         <Divider />
