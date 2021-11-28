@@ -1,7 +1,7 @@
-import {serverSetup} from '../src/index';
+import {expressApp} from '../src/app';
 import chai, {expect} from 'chai';
 import chaiHttp from 'chai-http';
-import {createConnection, Repository} from 'typeorm';
+import {ConnectionOptions, createConnection, getConnection, Repository} from 'typeorm';
 import { User } from '../src/model/User';
 import http from 'http';
 
@@ -15,27 +15,34 @@ testAccount.email = "test@test1234.ee";
 testAccount.password = "test1234!";
 
 
-let app: http.Server;
+const testDbConnection: ConnectionOptions = {
+    "type": "postgres",
+    "host": "pgdb",
+    "port": 5432,
+    "username": "postgres",
+    "password": "root",
+    "database": "heletrammtestdb",
+    "dropSchema": true,
+    "synchronize": true,
+    "entities": ["src/model/*.ts"],
+}
 
-let userRepository: Repository<User>
+let userRepository: Repository<User>;
+const app = expressApp;
+let server: http.Server;
 
-before((done) => {
-    createConnection({
-        type: "postgres",
-        host: "pgdb",
-        port: 5432,
-        username: "postgres",
-        password: "root",
-        database: "heletrammtestdb",
-        synchronize: true,
-        entities: ["src/model/*.ts"]
-    }).then((connection) => {
-        userRepository = connection.getRepository(User);
-        console.log("Successfully connected to test db");
-        ({app} = serverSetup());
-        done();
-    });
+
+before(() => {
+    it('Server setup', async () => {
+        await createConnection(testDbConnection);
+        server = app.listen(3002, () => {
+            console.log("Test server running");
+        });
+        userRepository = getConnection().getRepository(User);
+
+    }).timeout(5000);
 })
+
 
 describe("Testing if server works", () => {
     it('server is live', (done) => {
@@ -47,14 +54,6 @@ describe("Testing if server works", () => {
 })
 
 describe('Registration test', () => {
-    before((done) => {
-        userRepository.delete({email: testAccount.email})
-        .then((res) => {
-            done();
-        })
-        .catch((err) => {throw new Error(err)})
-    })
-
     it('Can register', (done) => {
         chai.request("http://localhost:3002")
         .post('/register')

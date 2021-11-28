@@ -23,6 +23,11 @@ export const InitChat = async (req: ReqWithUser, res: Response, next: NextFuncti
     else if (room_type === RoomType.GROUP) {
         //InitGroupChat
     }
+    else {
+        res.status(404).json({
+            error: "Specify room type"
+        });
+    }
 }
 
 export const InitPrivateChat = async (req: ReqChat, res: Response, next: NextFunction) => {
@@ -51,16 +56,12 @@ export const InitPrivateChat = async (req: ReqChat, res: Response, next: NextFun
     })
 
 
-    console.log(room);
-    console.log("got ere");
     if (room.length < 1) {
-        console.log("Saved new room");
         const newRoom = new Room();
         newRoom.name = me.nickname + friend.nickname + RoomType.PRIVATE;
         newRoom.type = RoomType.PRIVATE;
         newRoom.users = [friend, me];
         const savedRoom = await roomRepository.save(newRoom);
-        console.log(savedRoom);
         req.room = savedRoom;
     }
     else {

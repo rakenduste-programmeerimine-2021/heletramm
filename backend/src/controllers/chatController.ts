@@ -19,7 +19,7 @@ export const connectToRoom = (socket: Socket, room_name: string) => {
 
 //REST routes
 export const initChatConnection = (req: ReqChat, res: Response) => {
-    res.json(req.room);
+    res.status(200).json(req.room);
     return;
 
 }
