@@ -16,7 +16,7 @@ const PORT = require.main === module ? 3001 : 3002;
 
 export const serverSetup = () => {
     const expressApp = express();
-    expressApp.use(cors());
+    expressApp.use(cors({credentials : true,origin:'http://localhost:3000' }));
     expressApp.use(express.json());
     expressApp.use(cookieParser());
     expressApp.use(authRoutes);

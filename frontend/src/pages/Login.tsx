@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import { Context } from '../store';
 import { FormControl, FormLabel, FormHelperText} from '@chakra-ui/form-control';
 import {Flex, Box, Heading, Button, Link, Divider, chakra} from "@chakra-ui/react";
@@ -11,6 +11,17 @@ import { useNavigate } from "react-router-dom";
 const UserAlt = chakra(FaMailBulk);
 const Lock = chakra(FaLock);
 
+interface decodedjwt {
+    nickname: string
+}
+
+interface User {
+    token: string,
+    user: string
+}
+
+
+
 const Login = () => {
 
     const navigate = useNavigate();
@@ -18,32 +29,43 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [token, setToken] = useState("");
+    const [nickname, setNickname] = useState("");
     const [state, dispatch] = useContext(Context);
 
-    const handleSubmit = (e: React.SyntheticEvent) => {
+    useEffect(() => {
+        console.log(state.auth.user);
+        console.log(state.auth.token);
+    }, [])
+
+    const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
-        axios.post("http://localhost:3001/login", {
+        const response =  await axios.post("http://localhost:3001/login", {
             email: email,
             password: password
-        }).then((response) => {
-            const resp = response.data;
-            console.log(JSON.stringify(resp));
-            if (response.data.token != undefined) {
-                navigate("/");
-            }
-            setToken(response.data.token);
-        }, (error: Error) => {
-            console.log(error);
-        });
+        }, {withCredentials: true})
 
-        dispatch(loginUser(token));
+        console.log(JSON.stringify(response.data));
+        if (response.data.token != undefined && response.data.token != null) {
+            setToken(response.data.token);
+            setNickname(response.data.username);
+            localStorage.setItem("user", response.data.username);
+            if (!response.data.token) return;
+            navigate("/");
+        }
+        
+        const user: User = {
+            token: token,
+            user: nickname
+        }
+        
+        await dispatch(loginUser(user));
     }
 
     
 
     return (
         <div>
-            <Flex width="full" height="100vh" align="center" justifyContent="center" backgroundColor="#45B69C">
+            <Flex width="full" minH="100vh" align="center" justifyContent="center" backgroundColor="#45B69C">
                 <Box p={20} borderWidth={2} borderRadius={8} boxShadow="lg" backgroundColor="whiteAlpha.800">
                     <Box textAlign="center" mb={14}>
                         <Heading>Login</Heading>
