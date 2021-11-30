@@ -4,6 +4,7 @@ import { authReducer } from './reducer';
 import combineReducers from "react-combine-reducers";
 import axios from 'axios';
 
+
 const initialAuth = {
     token: null,
 }
@@ -14,8 +15,8 @@ const [combinedReducer, initialState] = combineReducers({
 
 export const Context = createContext(initialState);
 
-function Store ({ children }) {
-
+const Store: React.FC = ({children}) => {
+    
     const [state, dispatch] = useReducer(combinedReducer, initialState);
     
 
@@ -24,6 +25,7 @@ function Store ({ children }) {
             {children}
         </Context.Provider>
     )
+
 }
 
 export default Store;
