@@ -7,7 +7,6 @@ import axios from 'axios';
 
 const initialAuth = {
     token: null,
-    user: null
 }
 
 const [combinedReducer, initialState] = combineReducers({

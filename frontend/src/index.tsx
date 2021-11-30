@@ -4,11 +4,14 @@ import ReactDOM from "react-dom"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import * as serviceWorker from "./serviceWorker"
+import Store from "./store";
 
 ReactDOM.render(
   <React.StrictMode>
-    <ColorModeScript />
-    <App />
+    <Store>
+      <ColorModeScript />
+      <App />
+    </Store>
   </React.StrictMode>,
   document.getElementById("root"),
 )
