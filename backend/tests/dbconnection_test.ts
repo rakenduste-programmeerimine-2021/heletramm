@@ -87,12 +87,18 @@ describe('Registration test', () => {
         })
     })
 
+
     it('Refresh_token', (done) => {
         agent.get('/refresh_token').end((err, res) => {
             if (err) throw Error(err);
             expect(res.body.success).to.be.true;
             done();
         })
+    })
+
+    it('Logout', async () => {
+        const response = await agent.get('/logout').send()
+        expect(response).to.not.have.cookie('jid');
     })
 
     after((done) => {

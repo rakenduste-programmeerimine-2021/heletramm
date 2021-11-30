@@ -3,7 +3,7 @@ import {getConnection, getRepository} from 'typeorm';
 import {User} from '../model/User';
 import {hash, genSalt, compare} from 'bcrypt';
 import {sign} from 'jsonwebtoken';
-import {TokenUser} from '../middleware/authorization';
+import {ReqWithUser, TokenUser} from '../middleware/authorization';
 import {verify} from 'jsonwebtoken';
 
 interface RefreshTokenResponse {
@@ -16,6 +16,12 @@ export const GetUsers = async (req: Request, res: Response) => {
     const userRepository = connection.getRepository(User);
     const users = await userRepository.find();
     res.json(users);
+}
+
+export const Logout = async (req: ReqWithUser, res: Response) => {
+    if (req.user) {
+        res.cookie('jid', {}, {httpOnly: true});
+    }
 }
 
 export const RefreshToken = async (req: Request, res: Response) => {

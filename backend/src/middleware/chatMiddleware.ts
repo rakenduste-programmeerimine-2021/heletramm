@@ -46,7 +46,7 @@ export const InitPrivateChat = async (req: ReqChat, res: Response, next: NextFun
     const room = rooms.filter((room) => {
         let hasUsers = true;
         [me, friend].forEach((user) => {
-            let roomUserIds = room.users.map((user) => user.id);
+            const roomUserIds = room.users.map((user) => user.id);
             if (!roomUserIds.includes(user.id)) {
                 hasUsers = false
             } else {
