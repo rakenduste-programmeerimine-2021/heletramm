@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useContext } from 'react';
 import {io} from 'socket.io-client';
 import axios from "axios";
 import { Flex, Box, Heading, Spacer, ListItem} from "@chakra-ui/layout";
@@ -7,6 +7,7 @@ import {List, Input, WrapItem, Avatar, Button, Text, Divider, Menu, MenuButton, 
 import MessageBox from "../components/Message";
 import MessageFeed from "../components/MessageFeed";
 import { useNavigate } from "react-router-dom";
+import { Context } from "../store";
 
 const Chat: React.FC = () => {
 
@@ -43,6 +44,7 @@ const Chat: React.FC = () => {
     const [friends, setFriends] = useState<User[]>([]);
     const [connectedToRoom, setConnectedToRoom] = useState<boolean>(false);
     const [roomName, setRoomName] = useState<string>("");
+    const [state, dispatch] = useContext(Context);
 
     const ChangeRoute = () => {
         const path = "/login";
@@ -59,7 +61,8 @@ const Chat: React.FC = () => {
     }, [])
 
     useEffect(() => {
-        getFriends()
+        getFriends();
+        console.log(state.auth.token);
     }, [getFriends])
 
     const socket = io("http://localhost:3001", {auth: {
@@ -88,8 +91,8 @@ const Chat: React.FC = () => {
 
     return (
         <div>
-            <Flex width="full" height="100vh" alignItems="center" justifyContent="center">
-                    <Box w="20%" h="80%" bg="red" ml={8} borderRadius={8}>
+            <Flex width="full" height="100vh" alignItems="center" justifyContent="center" backgroundColor="#45B69C">
+                    <Box w="20%" h="80%" bg="#7293A0" ml={8} borderRadius={8} border="2px">
                         <Heading ml={24}>Contacts</Heading>
                         <Menu>
                             {
@@ -101,7 +104,7 @@ const Chat: React.FC = () => {
                         
                     </Box>
                     <Spacer />
-                    <Box w="70%" h="80%" bg="green" mr={8} borderRadius={8}>
+                    <Box w="70%" h="80%" bg="#7293A0" mr={8} borderRadius={8} border="2px">
                         <Heading ml={8} mt={4}>Username</Heading>
                         <Divider mt={6} />
                         <MessageFeed messages={testMessages} />
