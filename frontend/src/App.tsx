@@ -14,7 +14,6 @@ import TestChat from "./pages/TestChat";
 import Navbar from "./components/Navbar";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
-import { setupMaster } from "cluster";
 
 const App = () => {
 

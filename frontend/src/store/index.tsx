@@ -30,6 +30,7 @@ function Store ({ children }: storeProps) {
             {children}
         </Context.Provider>
     )
+
 }
 
 export default Store;
