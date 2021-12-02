@@ -12,16 +12,25 @@ const Lock = chakra(FaLock);
 const Mail = chakra(FaMailBulk);
 const User = chakra(FaUser);
 
-const Register: React.FC = () => {
+export interface Props {
+  onUsernameChange: (username: string) => void;
+  onPasswordChange: (password: string) => void;
+  onEmailChange: (email: string) => void;
+  onSubmit: (username: string, email: string, password: string) => void;
+}
+
+const Register: React.FC<Props> = (props: Props) => {
 
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
+
+        props.onSubmit(username, email, password);
 
         axios.post("http://localhost:3001/register", {
             nickname: username,
@@ -31,7 +40,7 @@ const Register: React.FC = () => {
             const resp = response.data;
             console.log(JSON.stringify(resp));
             if (response.data != undefined) {
-                navigate("/login");
+                //navigate("/login");
             }
         }, (error) => {
             console.log(error);
@@ -50,7 +59,7 @@ const Register: React.FC = () => {
                     <Box textAlign="center" marginBottom="2rem">
                         <Heading>Sign up</Heading>
                     </Box>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} data-testid="register-form">
                         <FormControl id="username" isRequired mb={4}>
                             <FormLabel>Username</FormLabel>
                             <InputGroup>
@@ -58,7 +67,7 @@ const Register: React.FC = () => {
                                         pointerEvents="none"
                                         children={<User color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="text" onChange={e => {setUsername(e.currentTarget.value)}} />
+                                    <Input data-testid="username" outlineColor="blackAlpha.800" type="text" onChange={e => {setUsername(e.currentTarget.value); props.onUsernameChange(e.currentTarget.value)}} />
                             </InputGroup>
                         </FormControl>
                         <FormControl id="email" isRequired mb={4}>
@@ -68,7 +77,7 @@ const Register: React.FC = () => {
                                     pointerEvents="none"
                                     children={<Mail color="gray.300" />}
                                 />
-                                <Input outlineColor="blackAlpha.800" type="email" onChange={e => {setEmail(e.currentTarget.value)}} />
+                                <Input data-testid="email" outlineColor="blackAlpha.800" type="email" onChange={e => {setEmail(e.currentTarget.value); props.onEmailChange(e.currentTarget.value)}} />
                             </InputGroup>
                         </FormControl>
                         <FormControl id="password" isRequired mb={8}>
@@ -78,12 +87,12 @@ const Register: React.FC = () => {
                                     pointerEvents="none"
                                     children={<Lock color="gray.300" />}
                                 />
-                                <Input outlineColor="blackAlpha.800" type="password" onChange={e => {setPassword(e.currentTarget.value)}} />
+                                <Input data-testid="password" outlineColor="blackAlpha.800" type="password" onChange={e => {setPassword(e.currentTarget.value); props.onPasswordChange(e.currentTarget.value)}} />
                             </InputGroup>
                         </FormControl>
                         <Divider />
                         <Stack align="center">
-                            <Button width="80%" mt={8} type="submit" bgColor="#45B69C">
+                            <Button data-testid="submit" width="80%" mt={8} type="submit" bgColor="#45B69C">
                                 Register
                             </Button>
                         </Stack>

@@ -27,10 +27,11 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
   useEffect(() => {
 
     console.log(state.auth.token);
+    console.log(state.auth.user);
 
     if (state.auth.token != null && state.auth.token != undefined) {
       setLoggedIn(true);
-      setUsername(localStorage.getItem("user"));
+      setUsername(state.auth.user);
     }
   }, [])
 

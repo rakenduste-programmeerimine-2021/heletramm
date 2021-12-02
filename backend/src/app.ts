@@ -1,4 +1,5 @@
-import cors from 'cors';
+//import cors from 'cors';
+var cors = require('cors');
 import express, {Request, Response} from 'express';
 import authRoutes from './routes/authRoutes';
 import chatRoutes from './routes/chatRoutes';
@@ -7,9 +8,15 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const corsOptions={
+    origin: "http://localhost:3000",
+    credentials: true,
+    optionSuccessStatus: 200
+}
+
 
 export const expressApp = express();
-expressApp.use(cors());
+expressApp.use(cors(corsOptions));
 expressApp.use(express.json());
 expressApp.use(cookieParser());
 expressApp.use(authRoutes);

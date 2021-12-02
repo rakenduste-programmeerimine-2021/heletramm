@@ -8,6 +8,7 @@ import MessageBox from "../components/Message";
 import MessageFeed from "../components/MessageFeed";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store";
+import ScrollableFeed from "react-scrollable-feed";
 
 const Chat: React.FC = () => {
 
@@ -39,7 +40,8 @@ const Chat: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const testMessages = ["message1", "messag23"];
+    const [testMessages, setTestMessages] = useState<string[]>([]);
+    const [hasSent, setHasSent] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
     const [friends, setFriends] = useState<User[]>([]);
     const [connectedToRoom, setConnectedToRoom] = useState<boolean>(false);
@@ -53,10 +55,11 @@ const Chat: React.FC = () => {
 
     const getFriends = useCallback(async () => {
         const response = await axios.get<FriendsResponse>("http://localhost:3001/friend/me", {headers: {
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywibmlja25hbWUiOiJ0ZXN0MyIsImlhdCI6MTYzNzk5NjQxNCwiZXhwIjoxNjM4MDAwMDE0fQ.Fyp2xvxsU6tge-qK8YeSIwTb1hNHVMJqs4D4mDXKf2w'
+            Authorization: 'Bearer ' + state.auth.token
         }});
         const users = response.data.friends.map((friend) => friend.user);
         console.log(users);
+        console.log(response.data);
         setFriends(users);
     }, [])
 
@@ -66,8 +69,23 @@ const Chat: React.FC = () => {
     }, [getFriends])
 
     const socket = io("http://localhost:3001", {auth: {
-        token: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywibmlja25hbWUiOiJ0ZXN0MyIsImlhdCI6MTYzNzk5NjQxNCwiZXhwIjoxNjM4MDAwMDE0fQ.Fyp2xvxsU6tge-qK8YeSIwTb1hNHVMJqs4D4mDXKf2w'
+        token: 'Bearer ' + state.auth.token
     }});
+
+
+        
+    socket.on("message", (message: string) => {
+        const currentMessages: string[] = testMessages;
+        currentMessages.push(message);
+        console.log(message);
+        setTestMessages(currentMessages);
+        if (testMessages != null) {
+            setHasSent(true);
+        }
+        setHasSent(false);
+        console.log(testMessages);
+    })
+
 
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
@@ -79,7 +97,7 @@ const Chat: React.FC = () => {
 
     const connectToChat = async (friend_id: number) => {
         const roomResponse = await axios.post<Room>('http://localhost:3001/connect', {friend_id, room_type: 'private'}, {headers: {
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywibmlja25hbWUiOiJ0ZXN0MyIsImlhdCI6MTYzNzk5NjQxNCwiZXhwIjoxNjM4MDAwMDE0fQ.Fyp2xvxsU6tge-qK8YeSIwTb1hNHVMJqs4D4mDXKf2w'
+            Authorization: 'Bearer ' + state.auth.token
         }})
         console.log(roomResponse.data);
         socket.emit('join-room', roomResponse.data.name);
@@ -107,9 +125,11 @@ const Chat: React.FC = () => {
                     <Box w="70%" h="80%" bg="#7293A0" mr={8} borderRadius={8} border="2px">
                         <Heading ml={8} mt={4}>Username</Heading>
                         <Divider mt={6} />
-                        <MessageFeed messages={testMessages} />
+                        <ScrollableFeed>
+                            <MessageFeed messages={testMessages} />
+                        </ScrollableFeed>
                         <form onSubmit={handleSubmit}>
-                            <Input ml={10} mt={48} width="80%" placeholder="Message...." bg="white" size="lg" onKeyPress={(event) => setMessage(event.currentTarget.value)}/>
+                            <Input ml={10} width="80%" placeholder="Message...." bg="white" size="lg" onKeyPress={(event) => setMessage(event.currentTarget.value)}/>
                             <Button ml={8} type="submit">Send</Button>
                         </form>
                     </Box>
@@ -119,20 +139,3 @@ const Chat: React.FC = () => {
 }
 
 export default Chat;
-
-{/* <List spacing={6} mt={4} ml={4}> */}
-                            {/* <ListItem>
-                                <Avatar name="Jaanus Mikker" src="https://via.placeholder.com/150" size="lg">
-                                    <AvatarBadge boxSize="0.8em" bg="green" borderColor="transparent"/>
-                                </Avatar>
-                                <Text>Test Kasutaja</Text>
-                            </ListItem>
-                            <ListItem>
-                                <Avatar name="Jaanus Mikker" src="https://via.placeholder.com/150" size="lg">
-                                    <AvatarBadge boxSize="0.8em" bg="tomato" borderColor="transparent" />
-                                </Avatar>
-                                <Text>Another test</Text>
-                            </ListItem> */}
-
-
-                        {/* </List> */}

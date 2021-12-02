@@ -8,7 +8,7 @@ export const userDisconnected = (reason: string) => {
 }
 
 export const userMessage = (socket: Socket, room_name: string, message: string) => {
-    socket.to(room_name).emit(message);
+    socket.to(room_name).emit("message", message);
     console.log(message);
 
 }

@@ -15,31 +15,34 @@ import Navbar from "./components/Navbar";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 
-const App = () => {
+const App: React.FC = () => {
 
   const [state, dispatch] = useContext(Context);
   const [token, setToken] = useState("");
+  const [showNavbar, setShowNavbar] = useState(true);
 
   const getRefreshToken = async () => {
     const response = await axios.get("http://localhost:3001/refresh_token", {withCredentials: true});
     console.log(response.data);
     setToken(response.data.token);
-    console.log("tookenn: " + localStorage.getItem("user"));
 
     const refreshToken = {
-      token: response.data.token
+      token: response.data.token,
+      user: response.data.user
     }
 
     if (response.data.token != null) {
 
       dispatch(loginUser(refreshToken));
     }
-
-
   }
 
   useEffect(() => {
     getRefreshToken();
+    if (state.auth.token == "") {
+      setShowNavbar(false);
+    }
+
     console.log(token);
   },[])
 
@@ -47,14 +50,18 @@ const App = () => {
     return <Heading>Loading...</Heading>
   }
 
+  function empty() {
+    return;
+  }
+
   return (
     <div>
        <ChakraProvider theme={theme}>
         <BrowserRouter>
-          <Navbar />
+          {showNavbar ? <Navbar /> : null}
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Register />} />
+            <Route path="/signup" element={<Register onUsernameChange={empty} onEmailChange={empty} onPasswordChange={empty} onSubmit={empty} />} />
             <Route path="/testchat" element={<TestChat/>}/>
           </Routes>
           <Routes>
