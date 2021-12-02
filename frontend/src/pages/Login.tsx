@@ -6,14 +6,10 @@ import { FaLock, FaMailBulk } from 'react-icons/fa';
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
 import axios from "axios";
 import { loginUser } from '../store/actions';
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 
 const UserAlt = chakra(FaMailBulk);
 const Lock = chakra(FaLock);
-
-interface decodedjwt {
-    nickname: string
-}
 
 interface User {
     token: string,
@@ -24,12 +20,13 @@ interface User {
 
 const Login = () => {
 
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [token, setToken] = useState("");
     const [nickname, setNickname] = useState("");
+    const [loggedIn, setLoggedIn] = useState(false);
     const [state, dispatch] = useContext(Context);
 
     useEffect(() => {
@@ -48,17 +45,24 @@ const Login = () => {
         if (response.data.token != undefined && response.data.token != null) {
             setToken(response.data.token);
             setNickname(response.data.username);
-            localStorage.setItem("user", response.data.username);
             if (!response.data.token) return;
-            navigate("/");
         }
         
         const user: User = {
             token: token,
             user: nickname
         }
+
+        console.log(nickname);
+
+        if (user.token != null && user.user != null) {
+            setLoggedIn(true);
+        }
         
         await dispatch(loginUser(user));
+
+        //navigate("/");
+        //window.location.reload(false);
     }
 
     
@@ -79,7 +83,7 @@ const Login = () => {
                                         pointerEvents="none"
                                         children={<UserAlt color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="email" onChange={e => {setEmail(e.currentTarget.value)}} />
+                                    <Input outlineColor="blackAlpha.800" type="email" id="email" onChange={e => {setEmail(e.currentTarget.value)}} />
                                 </InputGroup>
                                 <FormHelperText>We'll never share your email</FormHelperText>
                             </FormControl>
@@ -90,7 +94,7 @@ const Login = () => {
                                         pointerEvents="none"
                                         children={<Lock color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="password" onChange={e => {setPassword(e.currentTarget.value)}} />
+                                    <Input outlineColor="blackAlpha.800" type="password" id="password" onChange={e => {setPassword(e.currentTarget.value)}} />
                                 </InputGroup>
                                 <FormHelperText>Don't ever share your password with anyone</FormHelperText>
                             </FormControl>
