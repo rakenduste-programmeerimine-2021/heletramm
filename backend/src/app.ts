@@ -4,7 +4,7 @@ import authRoutes from './routes/authRoutes';
 import chatRoutes from './routes/chatRoutes';
 import friendRoutes from './routes/friendRoutes';
 import cookieParser from 'cookie-parser';
-import {authErrorHandler} from './middleware/authorization';
+import {authErrorHandler} from './error_handling/authErrors';
 import dotenv from 'dotenv';
 dotenv.config();
 
