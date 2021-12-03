@@ -12,6 +12,10 @@ COPY --chown=node:node . $HOME/app
 RUN yarn install && \
     yarn cache clean
 
+RUN chown -R node /app/node_modules
+
+USER node
+
 ENTRYPOINT ["yarn"]
 CMD ["run start"]
 

@@ -1,25 +1,81 @@
-import React from 'react';
+import React, {useState, useContext, useEffect} from 'react';
+import { Context } from '../store';
 import { FormControl, FormLabel, FormHelperText} from '@chakra-ui/form-control';
 import {Flex, Box, Heading, Button, Link, Divider, chakra} from "@chakra-ui/react";
 import { FaLock, FaMailBulk } from 'react-icons/fa';
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
+import axios from "axios";
+import { loginUser } from '../store/actions';
+//import { useNavigate } from "react-router-dom";
 
 const UserAlt = chakra(FaMailBulk);
 const Lock = chakra(FaLock);
 
+interface User {
+    token: string,
+    user: string
+}
+
+
+
 const Login = () => {
+
+    //const navigate = useNavigate();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [token, setToken] = useState("");
+    const [nickname, setNickname] = useState("");
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [state, dispatch] = useContext(Context);
+
+    useEffect(() => {
+        console.log(state.auth.user);
+        console.log(state.auth.token);
+    }, [])
+
+    const handleSubmit = async (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        const response =  await axios.post("http://localhost:3001/login", {
+            email: email,
+            password: password
+        }, {withCredentials: true})
+
+        console.log(JSON.stringify(response.data));
+        if (response.data.token != undefined && response.data.token != null) {
+            setToken(response.data.token);
+            setNickname(response.data.username);
+            if (!response.data.token) return;
+        }
+        
+        const user: User = {
+            token: token,
+            user: nickname
+        }
+
+        console.log(nickname);
+
+        if (user.token != null && user.user != null) {
+            setLoggedIn(true);
+        }
+        
+        await dispatch(loginUser(user));
+
+        //navigate("/");
+        //window.location.reload(false);
+    }
 
     
 
     return (
         <div>
-            <Flex width="full" height="100vh" align="center" justifyContent="center" backgroundColor="#45B69C">
+            <Flex width="full" minH="100vh" align="center" justifyContent="center" backgroundColor="#45B69C">
                 <Box p={20} borderWidth={2} borderRadius={8} boxShadow="lg" backgroundColor="whiteAlpha.800">
                     <Box textAlign="center" mb={14}>
                         <Heading>Login</Heading>
                     </Box>
                     <Box my={4} textAlign="left">
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <FormControl id="email" isRequired mb={4}>
                                 <FormLabel>Email address</FormLabel>
                                 <InputGroup>
@@ -27,7 +83,7 @@ const Login = () => {
                                         pointerEvents="none"
                                         children={<UserAlt color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="email" />
+                                    <Input outlineColor="blackAlpha.800" type="email" id="email" onChange={e => {setEmail(e.currentTarget.value)}} />
                                 </InputGroup>
                                 <FormHelperText>We'll never share your email</FormHelperText>
                             </FormControl>
@@ -38,7 +94,7 @@ const Login = () => {
                                         pointerEvents="none"
                                         children={<Lock color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="password" />
+                                    <Input outlineColor="blackAlpha.800" type="password" id="password" onChange={e => {setPassword(e.currentTarget.value)}} />
                                 </InputGroup>
                                 <FormHelperText>Don't ever share your password with anyone</FormHelperText>
                             </FormControl>

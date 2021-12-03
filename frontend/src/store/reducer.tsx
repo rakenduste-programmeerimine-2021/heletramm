@@ -1,18 +1,20 @@
 import { USER_LOGIN, USER_LOGOUT } from "./actions";
 
-const authReducer = (state: any, action: { type: any; payload: { token: String; user: Object; }; }) => {
+const authReducer = (state: any, action: { type: any; payload: { token: any, user: any; }; }) => {
     switch(action.type) {
         case USER_LOGIN:
             return {
                 ...state,
                 token: action.payload.token,
                 user: action.payload.user
+                
             }
         case USER_LOGOUT:
             return {
                 ...state,
-                token: null,
-                user: null
+                token: "",
+                user: ""
+                
             }
         default:
             return state    
@@ -20,4 +22,4 @@ const authReducer = (state: any, action: { type: any; payload: { token: String; 
 
 }
 
-export {authReducer}
+export { authReducer }
