@@ -13,8 +13,6 @@ import Message from "../components/Message";
 
 const Chat: React.FC = () => {
 
-    // Teha if statement, kas on logged in v ei, selle jargi muuta avatarbadge varvi
-
     interface User {
     id: number,
     nickname: string,
@@ -46,14 +44,9 @@ const Chat: React.FC = () => {
     const [message, setMessage] = useState<string>("");
     const [friends, setFriends] = useState<User[]>([]);
     const [connectedToRoom, setConnectedToRoom] = useState<boolean>(false);
-    const [roomName, setRoomName] = useState<string>("");
+    const [room, setRoom] = useState<Room>();
     const [connectedFriend, setConnectedFriend] = useState<string>("");
     const [state, dispatch] = useContext(Context);
-
-    const ChangeRoute = () => {
-        const path = "/login";
-        navigate(path);
-    }
 
     const getFriends = useCallback(async () => {
         const response = await axios.get<FriendsResponse>("http://localhost:3001/friend/me", {headers: {
@@ -92,7 +85,7 @@ const Chat: React.FC = () => {
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
         if (connectedToRoom) {
-            socket.emit('message', roomName, message);
+            socket.emit('message', room, message);
             setMessage("");
         }
         setMessage("");
@@ -105,11 +98,9 @@ const Chat: React.FC = () => {
         console.log(roomResponse.data);
         console.log(roomResponse.data.users[1].nickname);
         socket.emit('join-room', roomResponse.data.name);
-        setRoomName(roomResponse.data.name);
+        setRoom(roomResponse.data);
         setConnectedToRoom(true);
     }
-
-
 
     return (
         <div>
