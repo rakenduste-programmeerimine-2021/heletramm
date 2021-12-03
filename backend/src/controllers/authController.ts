@@ -3,7 +3,7 @@ import {getConnection, getRepository} from 'typeorm';
 import {User} from '../model/User';
 import {hash, genSalt, compare} from 'bcrypt';
 import {sign} from 'jsonwebtoken';
-import {ReqWithUser, TokenUser} from '../middleware/authorization';
+import {ReqWithUser} from '../middleware/authorization';
 import {verify} from 'jsonwebtoken';
 
 interface RefreshTokenResponse {
@@ -37,7 +37,7 @@ export const RefreshToken = async (req: Request, res: Response) => {
         res.send(response);
     }
 
-    const decoded = verify(token, process.env.REFRESH_SECRET) as TokenUser;
+    const decoded = verify(token, process.env.REFRESH_SECRET) as User;
     //Kui ei kehti siis lase uuesti sisse logida/ 2ra saada midagi tagasi
     if (!decoded) {
         const response: RefreshTokenResponse = {
@@ -62,7 +62,10 @@ export const Login = async (req: Request, res: Response) => {
 
     const userRepository = getRepository(User);
 
-    const user = await userRepository.findOne({email});
+    const user = await userRepository.findOne({
+        select: ['id', 'email', 'username', 'password'],
+        where: {email}
+    });
     if (!user) throw Error("User doesn't exist");
 
     const compareRst = await compare(password, user.password);
@@ -72,10 +75,11 @@ export const Login = async (req: Request, res: Response) => {
         })
         return;
     }
+    delete user.password;
 
-    const token = sign({id: user.id, nickname: user.nickname}, process.env.JWT_SECRET, {expiresIn: "60m"});
+    const token = sign({...user}, process.env.JWT_SECRET, {expiresIn: "60m"});
 
-    const refresh_token = sign({id: user.id, nickname: user.nickname}, process.env.REFRESH_SECRET, {expiresIn: "7d"});
+    const refresh_token = sign({...user}, process.env.REFRESH_SECRET, {expiresIn: "7d"});
 
     res.cookie("jid", refresh_token, {httpOnly: true});
 
@@ -84,7 +88,7 @@ export const Login = async (req: Request, res: Response) => {
 
 
 export const Register = async (req: Request, res: Response) => {
-    const {nickname, email, password} = req.body;
+    const {username, email, password} = req.body;
 
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({email});
@@ -98,7 +102,7 @@ export const Register = async (req: Request, res: Response) => {
 
     const newUser = new User();
     newUser.email = email;
-    newUser.nickname = nickname;
+    newUser.username = username;
     newUser.password = hashedPassword;
 
     await userRepository.save(newUser);

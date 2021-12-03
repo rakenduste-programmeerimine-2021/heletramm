@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from "typeorm";
-import { Room } from "./Room";
+import { Entity, PrimaryGeneratedColumn, Column} from "typeorm";
 
 @Entity()
 export class User {
@@ -7,10 +6,11 @@ export class User {
     id: number;
 
     @Column({type: "varchar", length: 200})
-    nickname: string
+    username: string
     @Column({type: "varchar", length: 200})
     email: string
-    @Column({type: "varchar"})
+
+    @Column({type: "varchar", select: false})
     password: string
 
 }

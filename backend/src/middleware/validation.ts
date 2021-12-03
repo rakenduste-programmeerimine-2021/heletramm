@@ -15,13 +15,13 @@ const validationMiddleware = (req: Request, res: Response, next: NextFunction) =
 }
 
 export const registerValidation: ValidationChain[] = [
-        body('nickname')
+        body('username')
             .isLength({min: 3})
-            .withMessage("Nickname must be atleast 3 characters")
-            .custom(async (nickname: string) => {
+            .withMessage("Username must be atleast 3 characters")
+            .custom(async (username: string) => {
                 const userRepository = getConnection().getRepository(User);
-                const user = await userRepository.findOne({nickname});
-                if (user) throw new Error("Nickname already exists");
+                const user = await userRepository.findOne({username});
+                if (user) throw new Error("Username already exists");
             }),
         body('email')
             .isEmail()

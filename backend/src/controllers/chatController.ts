@@ -1,6 +1,8 @@
 import { Response } from "express";
 import {Socket} from 'socket.io';
+import { getConnection } from "typeorm";
 import { ReqChat } from "../middleware/chatMiddleware";
+import { Message } from "../model/Message";
 
 //Socket.io routes
 export const userDisconnected = (reason: string) => {
@@ -9,7 +11,7 @@ export const userDisconnected = (reason: string) => {
 
 export const userMessage = (socket: Socket, room_name: string, message: string) => {
     socket.to(room_name).emit('message', message);
-    console.log(message);
+    const messageRepository = getConnection().getRepository(Message);
 
 }
 
