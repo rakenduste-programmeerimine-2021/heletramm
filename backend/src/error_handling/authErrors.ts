@@ -9,6 +9,15 @@ export class NotLoggedError extends Error {
     }
 }
 
+export class UserNotFoundError extends Error {
+    public statusCode: number;
+    constructor() {
+        super("User not found");
+        this.name = "UserNotFoundError"
+        this.statusCode = 404;
+    }
+}
+
 export const authErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof NotLoggedError) {
         return res.status(err.statusCode).json({

@@ -17,17 +17,26 @@ export const userDisconnected = (reason: string) => {
 export const userMessage = (socket: Socket, room: Room, message: string) => {
     socket.to(room.name).emit('message', message);
     //Save message to database
-    const user = socket.handshake.auth.user as User;
-    const messageRepository = getConnection().getRepository(Message);
-    const newMessage = new Message();
-    newMessage.message = message;
-    newMessage.room = room;
-    newMessage.user = user;
-    messageRepository.save(newMessage);
+    if (message) {
+        const user = socket.handshake.auth.user as User;
+        const messageRepository = getConnection().getRepository(Message);
+        const newMessage = new Message();
+        newMessage.message = message;
+        newMessage.room = room;
+        newMessage.user = user;
+        messageRepository.save(newMessage);
+
+    }
 }
 
-export const chatHistory = (req: ReqWithUser, res: Response) => {
+export const chatHistory = async (req: ReqWithUser, res: Response) => {
     const {room_id} = req.body;
+    const roomRepository = getConnection().getRepository(Message);
+    const messages = await roomRepository.find({room: room_id});
+
+    res.status(200).send({
+        messages
+    });
 }
 
 export const connectToRoom = (socket: Socket, room_name: string) => {

@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Room } from "./Room";
 import { User } from "./User";
 
@@ -15,5 +15,6 @@ export class Message {
     @JoinColumn(({name: "roomId", referencedColumnName: "id"}))
     room: Room;
 
+    @Column({type: "varchar"})
     message: string;
 }
