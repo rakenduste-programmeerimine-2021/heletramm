@@ -58,7 +58,7 @@ export const InitPrivateChat = async (req: ReqChat, res: Response, next: NextFun
 
     if (room.length < 1) {
         const newRoom = new Room();
-        newRoom.name = me.nickname + friend.nickname + RoomType.PRIVATE;
+        newRoom.name = me.username + friend.username + RoomType.PRIVATE;
         newRoom.type = RoomType.PRIVATE;
         newRoom.users = [friend, me];
         const savedRoom = await roomRepository.save(newRoom);

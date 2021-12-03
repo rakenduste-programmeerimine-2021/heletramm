@@ -6,16 +6,16 @@ import chai from 'chai';
 import { Friend } from "../src/model/Friend";
 
 const testAccount = new User();
-testAccount.nickname = "testuser1";
+testAccount.username = "testuser1";
 testAccount.email = "testuser1@test.ee";
 testAccount.password = "test1234!";
 
 const testAccount2 = new User();
-testAccount2.nickname = "testuser2";
+testAccount2.username = "testuser2";
 testAccount2.email = "testuser2@test.ee";
 testAccount2.password = "test1234!";
 
-let accessToken: string = "";
+let accessToken = "";
 
 let connection: Connection;
 let userRepository: Repository<User>;
@@ -41,7 +41,7 @@ describe("Friends", () => {
         await chai.request('http://localhost:3002')
         .post('/register')
         .send({
-            nickname: testAccount.nickname,
+            username: testAccount.username,
             email: testAccount.email,
             password: testAccount.password
         })
@@ -49,7 +49,7 @@ describe("Friends", () => {
         await chai.request("http://localhost:3002")
         .post('/register')
         .send({
-            nickname: testAccount2.nickname,
+            username: testAccount2.username,
             email: testAccount2.email,
             password: testAccount2.password
         })

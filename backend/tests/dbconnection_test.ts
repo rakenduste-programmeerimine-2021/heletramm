@@ -10,7 +10,7 @@ import http from 'http';
 chai.use(chaiHttp);
 
 const testAccount = new User();
-testAccount.nickname =  "testuser";
+testAccount.username =  "testuser";
 testAccount.email = "test@test1234.ee";
 testAccount.password = "test1234!";
 
@@ -58,7 +58,7 @@ describe('Registration test', () => {
         chai.request("http://localhost:3002")
         .post('/register')
         .send({
-            nickname: testAccount.nickname,
+            username: testAccount.username,
             email: testAccount.email,
             password: testAccount.password
         })

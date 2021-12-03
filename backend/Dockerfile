@@ -16,3 +16,4 @@ ENTRYPOINT ["yarn"]
 CMD ["run start"]
 
 EXPOSE 3001
+EXPOSE 9229
