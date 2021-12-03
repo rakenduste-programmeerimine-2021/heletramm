@@ -15,7 +15,7 @@ testAccount2.nickname = "testuser2";
 testAccount2.email = "testuser2@test.ee";
 testAccount2.password = "test1234!";
 
-let accessToken: string = "";
+let accessToken = "";
 
 let connection: Connection;
 let userRepository: Repository<User>;

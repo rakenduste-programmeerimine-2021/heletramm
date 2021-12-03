@@ -4,6 +4,7 @@ import authRoutes from './routes/authRoutes';
 import chatRoutes from './routes/chatRoutes';
 import friendRoutes from './routes/friendRoutes';
 import cookieParser from 'cookie-parser';
+import {authErrorHandler} from './middleware/authorization';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -15,6 +16,7 @@ expressApp.use(cookieParser());
 expressApp.use(authRoutes);
 expressApp.use(chatRoutes);
 expressApp.use('/friend', friendRoutes);
+expressApp.use(authErrorHandler);
 
 expressApp.get('/', (req: Request, res: Response) => {
     res.send("This is the default path");

@@ -22,6 +22,7 @@ const startServer = async () => {
 
     await createConnection(dbConnection);
     const app = http.createServer(expressApp);
+
     const io = new Server(app, {
         cors: {
             origin: "http://localhost:3000",

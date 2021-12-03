@@ -75,7 +75,7 @@ export const Login = async (req: Request, res: Response) => {
 
     const token = sign({id: user.id, nickname: user.nickname}, process.env.JWT_SECRET, {expiresIn: "60m"});
 
-    const refresh_token = sign({id: user.id}, process.env.REFRESH_SECRET, {expiresIn: "7d"});
+    const refresh_token = sign({id: user.id, nickname: user.nickname}, process.env.REFRESH_SECRET, {expiresIn: "7d"});
 
     res.cookie("jid", refresh_token, {httpOnly: true});
 

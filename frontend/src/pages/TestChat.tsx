@@ -49,6 +49,10 @@ const TestChat: React.FC = () => {
         token: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywibmlja25hbWUiOiJ0ZXN0MyIsImlhdCI6MTYzNzk5NjQxNCwiZXhwIjoxNjM4MDAwMDE0fQ.Fyp2xvxsU6tge-qK8YeSIwTb1hNHVMJqs4D4mDXKf2w'
     }});
 
+
+    socket.on('message', (message) => {
+    })
+
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
         if (connectedToRoom) {

@@ -12,21 +12,38 @@ export interface ReqWithUser extends Request {
     user?: TokenUser
 }
 
-export const authMiddleware = (req: ReqWithUser, res: Response, next: NextFunction) => {
-    try {
-        if (!req.headers.authorization) throw new Error("Access denied!");
+export class NotLoggedError extends Error {
+    public statusCode: number;
+    constructor() {
+        super("You are not logged in!");
+        this.name = "NotLoggedError";
+        this.statusCode = 401;
+    }
+}
 
-        const token = req.headers.authorization.split(" ")[1];
-        const decoded = verify(token, process.env.JWT_SECRET) as TokenUser;
-        
-        req.user = decoded;
-
-        next();
-    } catch (err) {
-        res.status(401).send({
-            error: "Access denied!"
+export const authErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+    if (err instanceof NotLoggedError) {
+        return res.status(err.statusCode).json({
+            errors: [
+                {
+                    type: err.name,
+                    msg: err.message
+                }
+            ]
         })
     }
+    next(err);
+}
+
+export const authMiddleware = (req: ReqWithUser, res: Response, next: NextFunction) => {
+    if (!req.headers.authorization) throw new NotLoggedError();
+
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = verify(token, process.env.JWT_SECRET) as TokenUser;
+    
+    req.user = decoded;
+
+    next();
 }
 
 export const socketAuthMiddleware = (socket: Socket, next) => {
