@@ -14,11 +14,9 @@ const MessageFeed: React.FC<MessageFeedProps> = ({messages}) => {
 
     return (
         <Flex mr={8} justifyContent="flex-end">
-        
             <Box padding={4} justifyContent="right">
                 {messages?.map((message: string, i) => <Message key={i} message={message}></Message>)}
             </Box>
-        
         </Flex>
     )
 }

@@ -3,16 +3,15 @@ import { useState, useCallback, useEffect, useContext } from 'react';
 import {io} from 'socket.io-client';
 import axios from "axios";
 import { Flex, Box, Heading, Spacer, ListItem} from "@chakra-ui/layout";
-import {List, Input, WrapItem, Avatar, Button, Text, Divider, Menu, MenuButton, MenuItem, Link} from "@chakra-ui/react";
+import {List, Input, WrapItem, Avatar, Button, Text, Divider, Menu, MenuButton, MenuItem, Center} from "@chakra-ui/react";
 import MessageBox from "../components/Message";
 import MessageFeed from "../components/MessageFeed";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store";
 import ScrollableFeed from "react-scrollable-feed";
+import Message from "../components/Message";
 
 const Chat: React.FC = () => {
-
-    // Teha if statement, kas on logged in v ei, selle jargi muuta avatarbadge varvi
 
     interface User {
     id: number,
@@ -45,13 +44,9 @@ const Chat: React.FC = () => {
     const [message, setMessage] = useState<string>("");
     const [friends, setFriends] = useState<User[]>([]);
     const [connectedToRoom, setConnectedToRoom] = useState<boolean>(false);
-    const [roomName, setRoomName] = useState<string>("");
+    const [room, setRoom] = useState<Room>();
+    const [connectedFriend, setConnectedFriend] = useState<string>("");
     const [state, dispatch] = useContext(Context);
-
-    const ChangeRoute = () => {
-        const path = "/login";
-        navigate(path);
-    }
 
     const getFriends = useCallback(async () => {
         const response = await axios.get<FriendsResponse>("http://localhost:3001/friend/me", {headers: {
@@ -90,9 +85,10 @@ const Chat: React.FC = () => {
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
         if (connectedToRoom) {
-            socket.emit('message', roomName, message);
+            socket.emit('message', room, message);
             setMessage("");
         }
+        setMessage("");
     }
 
     const connectToChat = async (friend_id: number) => {
@@ -100,39 +96,50 @@ const Chat: React.FC = () => {
             Authorization: 'Bearer ' + state.auth.token
         }})
         console.log(roomResponse.data);
+        console.log(roomResponse.data.users[1].nickname);
         socket.emit('join-room', roomResponse.data.name);
-        setRoomName(roomResponse.data.name);
+        setRoom(roomResponse.data);
         setConnectedToRoom(true);
     }
-
-
 
     return (
         <div>
             <Flex width="full" height="100vh" alignItems="center" justifyContent="center" backgroundColor="#45B69C">
                     <Box w="20%" h="80%" bg="#7293A0" ml={8} borderRadius={8} border="2px">
-                        <Heading ml={24}>Contacts</Heading>
+                        <Center>
+                            <Heading mb={8}>Friends</Heading>
+                        </Center>
                         <Menu>
                             {
                                 friends.map((user) => {
-                                    return <MenuItem onClick={() => connectToChat(user.id)}>{user.nickname}<Avatar name={user.nickname} src="https://via.placeholder.com/150" /></MenuItem>
+                                    return <MenuItem mb={2} onClick={() => {connectToChat(user.id); setConnectedFriend(user.nickname)}}>
+                                        <Avatar mr={8} name={user.nickname} src="" />
+                                        <Text fontSize='2xl'>{user.nickname}</Text>
+                                    </MenuItem>
                                 })
                             }
                         </Menu>
                         
                     </Box>
                     <Spacer />
-                    <Box w="70%" h="80%" bg="#7293A0" mr={8} borderRadius={8} border="2px">
-                        <Heading ml={8} mt={4}>Username</Heading>
+                    {connectedToRoom ? <Box w="70%" h="80%" bg="#7293A0" mr={8} borderRadius={8} border="2px">
+                        <Heading ml={8} mt={4}>{connectedFriend}</Heading>
                         <Divider mt={6} />
                         <ScrollableFeed>
                             <MessageFeed messages={testMessages} />
                         </ScrollableFeed>
                         <form onSubmit={handleSubmit}>
-                            <Input ml={10} width="80%" placeholder="Message...." bg="white" size="lg" onKeyPress={(event) => setMessage(event.currentTarget.value)}/>
+                            <Input ml={10} width="80%" placeholder="Message...." bg="white" size="lg" value={message} onChange={(event) => setMessage(event.currentTarget.value)}/>
                             <Button ml={8} type="submit">Send</Button>
                         </form>
+                    </Box> :
+                     <Box w="70%" h="80%" bg="#7293A0" mr={8} borderRadius={8} border="2px">   
+                            <Center h="80%">
+                                <Heading>Click on one of your friends to chat with them!</Heading>
+                            </Center>
                     </Box>
+                    }
+                    
             </Flex>
         </div>
     )

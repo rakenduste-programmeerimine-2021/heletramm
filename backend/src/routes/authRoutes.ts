@@ -13,6 +13,6 @@ router.post('/register', registerValidation, validationMiddleware,
 authController.Register);
 router.post('/login', loginValidation, authController.Login);
 router.get('/refresh_token', authController.RefreshToken);
-router.get('/logout', authMiddleware, authController.Logout);
+router.get('/logout', authController.Logout);
 
 export default router;
