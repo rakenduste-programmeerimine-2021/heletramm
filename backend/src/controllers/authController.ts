@@ -19,10 +19,11 @@ export const GetUsers = async (req: Request, res: Response) => {
     res.json(users);
 }
 
-export const Logout = async (req: ReqWithUser, res: Response) => {
-    if (req.user) {
-        res.cookie('jid', {}, {httpOnly: true});
-    }
+export const Logout = async (req: Request, res: Response) => {
+    res.clearCookie("jid", { domain: "localhost", path: "/"});
+    //res.redirect("/login");
+    //res.cookie('jid', {}, {httpOnly: true});
+    res.status(200).send("Logged out").end();
 }
 
 export const RefreshToken = async (req: Request, res: Response) => {

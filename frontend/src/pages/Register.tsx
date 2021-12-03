@@ -49,9 +49,6 @@ const Register: React.FC<Props> = (props: Props) => {
 
     }
 
-    
-    
-
     return (
         <div>
             <Flex width="full" height="100vh" align="center" justifyContent="center" backgroundColor="#45B69C">

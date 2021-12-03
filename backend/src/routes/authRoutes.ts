@@ -9,6 +9,6 @@ router.get('/users', authMiddleware, authController.GetUsers);
 router.post('/register', authController.Register);
 router.post('/login', authController.Login);
 router.get('/refresh_token', authController.RefreshToken);
-router.get('/logout', authMiddleware, authController.Logout);
+router.get('/logout', authController.Logout);
 
 export default router;

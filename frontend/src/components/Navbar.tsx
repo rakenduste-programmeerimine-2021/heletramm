@@ -1,4 +1,5 @@
 import {useState, useContext, useEffect} from 'react';
+import axios from "axios";
 import {useColorMode, Spacer, Switch, Box, Flex, Text, Heading, Stack} from '@chakra-ui/react';
 import {Button as ChakraButton} from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
@@ -17,10 +18,14 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    console.log(state.auth.token);
+    const response = await axios.get("http://localhost:3001/logout", {withCredentials: true});
+    console.log(JSON.stringify(response.data));
     dispatch(logoutUser());
     setLoggedIn(false);
     navigate("/login");
+    window.location.reload(false);
   }
 
   
@@ -29,7 +34,7 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
     console.log(state.auth.token);
     console.log(state.auth.user);
 
-    if (state.auth.token != null && state.auth.token != undefined) {
+    if (state.auth.user != undefined) {
       setLoggedIn(true);
       setUsername(state.auth.user);
     }

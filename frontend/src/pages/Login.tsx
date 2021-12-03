@@ -6,7 +6,7 @@ import { FaLock, FaMailBulk } from 'react-icons/fa';
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
 import axios from "axios";
 import { loginUser } from '../store/actions';
-//import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const UserAlt = chakra(FaMailBulk);
 const Lock = chakra(FaLock);
@@ -16,11 +16,9 @@ interface User {
     user: string
 }
 
-
-
 const Login = () => {
 
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -61,8 +59,8 @@ const Login = () => {
         
         await dispatch(loginUser(user));
 
-        //navigate("/");
-        //window.location.reload(false);
+        navigate("/");
+        window.location.reload(false);
     }
 
     
