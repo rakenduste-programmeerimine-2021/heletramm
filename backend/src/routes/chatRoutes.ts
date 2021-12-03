@@ -6,5 +6,6 @@ import {authMiddleware} from '../middleware/authorization';
 const router = express.Router();
 
 router.post('/connect', [authMiddleware, chatMiddleware.InitChat], chatController.initChatConnection);
+router.post('/history', [authMiddleware], chatController.chatHistory);
 
 export default router;

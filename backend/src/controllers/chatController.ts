@@ -1,18 +1,33 @@
 import { Response } from "express";
 import {Socket} from 'socket.io';
 import { getConnection } from "typeorm";
+import { ReqWithUser } from "../middleware/authorization";
 import { ReqChat } from "../middleware/chatMiddleware";
 import { Message } from "../model/Message";
+import { Room } from "../model/Room";
+import { User } from "../model/User";
+
 
 //Socket.io routes
 export const userDisconnected = (reason: string) => {
     console.log(`User disconnected, reason: ${reason}`);
 }
 
-export const userMessage = (socket: Socket, room_name: string, message: string) => {
-    socket.to(room_name).emit('message', message);
-    const messageRepository = getConnection().getRepository(Message);
 
+export const userMessage = (socket: Socket, room: Room, message: string) => {
+    socket.to(room.name).emit('message', message);
+    //Save message to database
+    const user = socket.handshake.auth.user as User;
+    const messageRepository = getConnection().getRepository(Message);
+    const newMessage = new Message();
+    newMessage.message = message;
+    newMessage.room = room;
+    newMessage.user = user;
+    messageRepository.save(newMessage);
+}
+
+export const chatHistory = (req: ReqWithUser, res: Response) => {
+    const {room_id} = req.body;
 }
 
 export const connectToRoom = (socket: Socket, room_name: string) => {
