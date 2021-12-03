@@ -8,7 +8,8 @@ import {verify} from 'jsonwebtoken';
 
 interface RefreshTokenResponse {
     success: boolean,
-    token?: string
+    token?: string,
+    user?: string
 }
 
 export const GetUsers = async (req: Request, res: Response) => {
@@ -32,24 +33,27 @@ export const RefreshToken = async (req: Request, res: Response) => {
     if (!token) {
         const response: RefreshTokenResponse = {
             success: false,
-            token: null
+            token: ""
         }
         res.send(response);
     }
 
     const decoded = verify(token, process.env.REFRESH_SECRET) as TokenUser;
+    console.log(decoded);
     //Kui ei kehti siis lase uuesti sisse logida/ 2ra saada midagi tagasi
     if (!decoded) {
         const response: RefreshTokenResponse = {
             success: false,
-            token: null
+            token: null,
+            user: null
         }
         res.send(response);
     }
     
     const response: RefreshTokenResponse = {
         success: true,
-        token: sign(decoded, process.env.JWT_SECRET)
+        token: sign(decoded, process.env.JWT_SECRET),
+        user: decoded.nickname
     }
 
     res.send(response);
@@ -74,12 +78,14 @@ export const Login = async (req: Request, res: Response) => {
     }
 
     const token = sign({id: user.id, nickname: user.nickname}, process.env.JWT_SECRET, {expiresIn: "60m"});
+    const username = user.nickname;
+    console.log("nickname: " + user.nickname);
 
     const refresh_token = sign({id: user.id, nickname: user.nickname}, process.env.REFRESH_SECRET, {expiresIn: "7d"});
 
     res.cookie("jid", refresh_token, {httpOnly: true});
 
-    res.status(200).send({token});
+    res.status(200).send({token, username}).end();
 }
 
 
