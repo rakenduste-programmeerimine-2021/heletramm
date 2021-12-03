@@ -15,7 +15,7 @@ const Chat: React.FC = () => {
 
     interface User {
     id: number,
-    nickname: string,
+    username: string,
     email: string,
     password: string
 }
@@ -96,7 +96,7 @@ const Chat: React.FC = () => {
             Authorization: 'Bearer ' + state.auth.token
         }})
         console.log(roomResponse.data);
-        console.log(roomResponse.data.users[1].nickname);
+        console.log(roomResponse.data.users[1].username);
         socket.emit('join-room', roomResponse.data.name);
         setRoom(roomResponse.data);
         setConnectedToRoom(true);
@@ -112,9 +112,9 @@ const Chat: React.FC = () => {
                         <Menu>
                             {
                                 friends.map((user) => {
-                                    return <MenuItem mb={2} onClick={() => {connectToChat(user.id); setConnectedFriend(user.nickname)}}>
-                                        <Avatar mr={8} name={user.nickname} src="" />
-                                        <Text fontSize='2xl'>{user.nickname}</Text>
+                                    return <MenuItem mb={2} onClick={() => {connectToChat(user.id); setConnectedFriend(user.username)}}>
+                                        <Avatar mr={8} name={user.username} src="" />
+                                        <Text fontSize='2xl'>{user.username}</Text>
                                     </MenuItem>
                                 })
                             }
