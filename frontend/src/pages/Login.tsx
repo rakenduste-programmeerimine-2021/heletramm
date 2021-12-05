@@ -16,24 +16,32 @@ interface User {
     user: string
 }
 
-const Login = () => {
+export interface Props {
+    onEmailChange: (email: string) => void;
+    onPasswordChange: (password: string) => void;
+    onSubmit: (email: string, password: string) => void;
+}
 
-    const navigate = useNavigate();
+const Login: React.FC<Props> = (props: Props) => {
+
+    //const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [token, setToken] = useState("");
     const [nickname, setNickname] = useState("");
     const [loggedIn, setLoggedIn] = useState(false);
-    const [state, dispatch] = useContext(Context);
+    //const [state, dispatch] = useContext(Context);
 
     useEffect(() => {
-        console.log(state.auth.user);
-        console.log(state.auth.token);
+       
     }, [])
 
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
+
+        props.onSubmit(email, password);
+
         const response =  await axios.post("http://localhost:3001/login", {
             email: email,
             password: password
@@ -57,9 +65,9 @@ const Login = () => {
             setLoggedIn(true);
         }
         
-        await dispatch(loginUser(user));
+        //await dispatch(loginUser(user));
 
-        navigate("/");
+        //navigate("/");
         window.location.reload(false);
     }
 
@@ -73,7 +81,7 @@ const Login = () => {
                         <Heading>Login</Heading>
                     </Box>
                     <Box my={4} textAlign="left">
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} data-testid="login-form">
                             <FormControl id="email" isRequired mb={4}>
                                 <FormLabel>Email address</FormLabel>
                                 <InputGroup>
@@ -81,7 +89,7 @@ const Login = () => {
                                         pointerEvents="none"
                                         children={<UserAlt color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="email" id="email" onChange={e => {setEmail(e.currentTarget.value)}} />
+                                    <Input data-testid="email" outlineColor="blackAlpha.800" type="email" id="email" onChange={e => {setEmail(e.currentTarget.value); props.onEmailChange(e.currentTarget.value)}} />
                                 </InputGroup>
                                 <FormHelperText>We'll never share your email</FormHelperText>
                             </FormControl>
@@ -92,11 +100,11 @@ const Login = () => {
                                         pointerEvents="none"
                                         children={<Lock color="gray.300" />}
                                     />
-                                    <Input outlineColor="blackAlpha.800" type="password" id="password" onChange={e => {setPassword(e.currentTarget.value)}} />
+                                    <Input data-testid="password" outlineColor="blackAlpha.800" type="password" id="password" onChange={e => {setPassword(e.currentTarget.value); props.onPasswordChange(e.currentTarget.value)}} />
                                 </InputGroup>
                                 <FormHelperText>Don't ever share your password with anyone</FormHelperText>
                             </FormControl>
-                            <Button width="full" mt={4} type="submit" bgColor="#45B69C">
+                            <Button data-testid="submit" width="full" mt={4} type="submit" bgColor="#45B69C">
                                 Sign In
                             </Button>
                         </form>

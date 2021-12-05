@@ -11,7 +11,7 @@ import {Context} from "../src/store"
 import {loginUser} from "../src/store/actions";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Home from "./pages/Chat";
+import Chat from "./pages/Chat";
 import TestChat from "./pages/TestChat";
 import Navbar from "./components/Navbar";
 import axios from "axios";
@@ -78,7 +78,7 @@ const App: React.FC = () => {
               path="/" 
               element={
                 <PrivateRoute isLoggedIn={isLoggedIn}>
-                  <Home />
+                  <Chat onMessageChange={empty} onConnectingToChat={empty} onAddFriendChange={empty} onAddFriendSubmit={empty} onMessageSubmit={empty} />
                 </PrivateRoute>} />
             <Route 
               path="/testchat" 

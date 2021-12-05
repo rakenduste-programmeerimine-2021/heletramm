@@ -15,6 +15,7 @@ export const AddFriend = async (req: ReqWithUser, res: Response) => {
 
     const friendToAdd = await userRepository.findOne({id: friend_id});
     if (!friendToAdd) throw new Error('');
+      
 
     const me = await userRepository.findOne({id: req.user.id});
     if (!me) throw Error("Me not found");
