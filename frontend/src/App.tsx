@@ -70,7 +70,7 @@ const App: React.FC = () => {
         <BrowserRouter>
           {showNavbar ? <Navbar /> : null}
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login onEmailChange={empty} onPasswordChange={empty} onSubmit={empty}/>} />
             <Route path="/signup" element={<Register onUsernameChange={empty} onEmailChange={empty} onPasswordChange={empty} onSubmit={empty} />} />
           </Routes>
           <Routes>
