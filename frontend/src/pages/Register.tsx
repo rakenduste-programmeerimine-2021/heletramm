@@ -6,6 +6,7 @@ import { FaLock, FaMailBulk, FaUser } from 'react-icons/fa';
 import { BsPerson } from "react-icons/bs";
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
 import { useNavigate } from 'react-router';
+import { useToast } from '@chakra-ui/toast';
 
 const Person = chakra(BsPerson);
 const Lock = chakra(FaLock);
@@ -25,6 +26,8 @@ const Register: React.FC<Props> = (props: Props) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const toast = useToast();
+
     //const navigate = useNavigate();
 
     const handleSubmit = (e: React.SyntheticEvent) => {
@@ -33,7 +36,7 @@ const Register: React.FC<Props> = (props: Props) => {
         props.onSubmit(username, email, password);
 
         axios.post("http://localhost:3001/register", {
-            nickname: username,
+            username: username,
             email: email,
             password: password 
         }).then((response) => {
@@ -41,6 +44,14 @@ const Register: React.FC<Props> = (props: Props) => {
             console.log(JSON.stringify(resp));
             if (response.data != undefined) {
                 //navigate("/login");
+                toast({
+                    title: 'Success!',
+                    description: "Account created successfully!",
+                    status: 'success',
+                    duration: 9000,
+                    isClosable: true,
+                    position: "top-right"
+                })
             }
         }, (error) => {
             console.log(error);

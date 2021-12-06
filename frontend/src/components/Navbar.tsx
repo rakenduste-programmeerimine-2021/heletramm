@@ -47,19 +47,7 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
           <Stack direction={{ base: "column", md: "row" }} width={{ base: "full", md: "auto" }} alignItems="center" flexGrow={1} mt={{ base: 4, md: 0 }} ml={4}>
             <Link to="/" >
               <ChakraButton as="a" variant="ghost" aria-label="Home" my={5} w="100%">
-                Home
-              </ChakraButton>
-            </Link>
-
-            <Link to="/about">
-              <ChakraButton as="a" variant="ghost" aria-label="About" my={5} w="100%">
-                About
-              </ChakraButton>
-            </Link>
-
-            <Link to="/contact">
-              <ChakraButton as="a" variant="ghost" aria-label="Contact" my={5} w="100%">
-                Contact
+                Chat
               </ChakraButton>
             </Link>
 
