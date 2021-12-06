@@ -7,7 +7,7 @@ import {
   Text
 } from "@chakra-ui/react"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import {Context} from "../src/store"
+import {Context} from "./store/Index"
 import {loginUser} from "../src/store/actions";
 import Login from "./pages/Login";
 import Register from "./pages/Register";

@@ -59,6 +59,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-combine-reducers": "^1.0.0"
+    "@types/react-combine-reducers": "^1.0.0",
+    "supertest": "^6.1.6"
   }
 }

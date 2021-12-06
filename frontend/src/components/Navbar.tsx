@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom";
 import {RouteProps, Link} from 'react-router-dom';
 import { logoutUser } from "../store/actions";
 import React from 'react';
-import {Context} from "../store";
+import {Context} from "../store/Index";
 
 
 const Navbar: React.FC<RouteProps> = (props: RouteProps) => {

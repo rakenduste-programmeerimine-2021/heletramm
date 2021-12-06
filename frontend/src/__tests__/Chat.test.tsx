@@ -2,11 +2,16 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { register } from "../serviceWorker";
 import Chat, {Props} from "../pages/Chat";
-import index, { Context } from '../store/index';
+import Login from "../pages/Login";
+import Index, { Context } from '../store/Index';
+import axios from "axios";
 
-// const contextProvider = ({children: any}) => (
-//   <Context.Provider>{children}</Context.Provider>
-// )
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>
+
+beforeEach(() => {
+  mockedAxios.post.mockResolvedValue({ email: 'testacc@gmail.com', password: "1234" });
+});
 
 function renderChat (props: Partial<Props> = {}) {
   const defaultProps = {
@@ -27,7 +32,7 @@ function renderChat (props: Partial<Props> = {}) {
     }
   };
 
-  return render(<Chat {...defaultProps} {...props} />)
+  return render(<Index><Chat {...defaultProps} {...props} /></Index>)
 }
 
 // test("Connect to chat with friend", async () => {
@@ -43,16 +48,20 @@ function renderChat (props: Partial<Props> = {}) {
 test("Add friend", async () => {
   const onAddFriendSubmit = jest.fn();
   
-  const {findByTestId} = renderChat({ onAddFriendSubmit })
-  const addFriendButton = await findByTestId("addfriendtoggle");
-  fireEvent.click(addFriendButton);
+  const {findByTestId} = renderChat({ onAddFriendSubmit });
+  const addFriendToggle = await findByTestId("addfriendtoggle");
+  const addFriendSubmit = await findByTestId("addfriendsubmit");
+  fireEvent.click(addFriendToggle);
 
   const friendid = await findByTestId("friendid");
 
   fireEvent.change(friendid, { target: { value: 1 } });
 
+  fireEvent.click(addFriendSubmit);
+
   expect(onAddFriendSubmit).toHaveBeenCalledWith(1);
 })
+
 
 // test("Can insert email", async () => {
 //   const onEmailChange = jest.fn();
