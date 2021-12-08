@@ -1,5 +1,5 @@
 import React, {useState, useContext, useEffect} from 'react';
-import { Context } from '../store';
+import { Context } from '../store/Index';
 import { FormControl, FormLabel, FormHelperText} from '@chakra-ui/form-control';
 import {Flex, Box, Heading, Button, Link, Divider, chakra} from "@chakra-ui/react";
 import { FaLock, FaMailBulk } from 'react-icons/fa';
@@ -47,7 +47,6 @@ const Login: React.FC<Props> = (props: Props) => {
             password: password
         }, {withCredentials: true})
 
-        console.log(JSON.stringify(response.data));
         if (response.data.token != undefined && response.data.token != null) {
             setToken(response.data.token);
             setNickname(response.data.username);
@@ -58,8 +57,6 @@ const Login: React.FC<Props> = (props: Props) => {
             token: token,
             user: nickname
         }
-
-        console.log(nickname);
 
         if (user.token != null && user.user != null) {
             setLoggedIn(true);

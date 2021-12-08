@@ -7,7 +7,7 @@ import {List, Input, WrapItem, Avatar, Button, Text, Divider, Menu, MenuButton, 
 import MessageBox from "../components/Message";
 import MessageFeed from "../components/MessageFeed";
 import { useNavigate } from "react-router-dom";
-import { Context } from "../store";
+import { Context } from "../store/Index";
 import ScrollableFeed from "react-scrollable-feed";
 import { useToast } from "@chakra-ui/toast";
 
@@ -16,7 +16,7 @@ export interface Props {
   onConnectingToChat: (friendId: string) => void;
   onAddFriendChange: (friendId: string) => void;
   onMessageSubmit: (message: string) => void;
-  onAddFriendSubmit: (friendId: number) => void;
+  onAddFriendSubmit: (friendId: string | undefined) => void;
 }
 
 const Chat: React.FC<Props> = (props: Props) => {
@@ -45,10 +45,20 @@ const Chat: React.FC<Props> = (props: Props) => {
         users: User[]
     }
 
+    interface ChatHistoryResponse {
+        messages: Message[]
+    }
+
+    interface Message {
+        id: number,
+        message: string
+    }
+
     //const navigate = useNavigate();
 
     const [testMessages, setTestMessages] = useState<string[]>([]);
     const [hasSent, setHasSent] = useState<boolean>(false);
+    const [messagesSet, setMessagesSet] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
     const [friendId, setFriendId] = useState<string>();
     const [friends, setFriends] = useState<User[]>([]);
@@ -59,6 +69,18 @@ const Chat: React.FC<Props> = (props: Props) => {
     const [state] = useContext(Context);
 
     const toast = useToast();
+
+    const getChatHistory = async (room_id: number) => {
+        const chatHistoryResponse = await axios.post<ChatHistoryResponse>("http://localhost:3001/history", {room_id: room_id}, {
+            headers: {
+               Authorization: 'Bearer ' + state.auth.token 
+            }
+        });
+
+        chatHistoryResponse.data.messages.map((msg) => testMessages.push(msg.message));
+        setMessagesSet(true);
+
+    }
 
     const getFriends = useCallback(async () => {
         const response = await axios.get<FriendsResponse>("http://localhost:3001/friend/me", {headers: {
@@ -72,7 +94,6 @@ const Chat: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         getFriends();
-        console.log(addFriendToggled);
     }, [getFriends])
 
     const socket = io("http://localhost:3001", {auth: {
@@ -114,6 +135,7 @@ const Chat: React.FC<Props> = (props: Props) => {
 
             setRoom(roomResponse.data);
             setConnectedToRoom(true);
+            getChatHistory(roomResponse.data.id);
             toast({
                 title: 'Connected',
                 description: "You are connected to the chat!",
@@ -128,6 +150,9 @@ const Chat: React.FC<Props> = (props: Props) => {
 
     const handleAddFriend = async (e: React.SyntheticEvent) => {
         e.preventDefault();
+
+        props.onAddFriendSubmit(friendId);
+
         const addFriendResponse = await axios.post('http://localhost:3001/friend/add', {
             friend_id: friendId
         }, {headers: {
@@ -170,7 +195,7 @@ const Chat: React.FC<Props> = (props: Props) => {
                                         <VStack mt={4}>
                                             <Text fontSize="xl">Insert your friend's ID!</Text>
                                             <Input data-testid="friendid" width='80%' placeholder='ID' bg='white' size="lg" onChange={(event) => setFriendId(event.currentTarget.value)} />
-                                            <Button onClick={handleAddFriend}>Add</Button>
+                                            <Button data-testid="addfriendsubmit" onClick={handleAddFriend}>Add</Button>
                                         </VStack>
                                     </Center> : <Button data-testid="addfriendtoggle" onClick={() => setAddFriendToggled(true)}>Add friend</Button>
                                 }
