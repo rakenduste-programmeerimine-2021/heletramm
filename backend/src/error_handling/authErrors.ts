@@ -1,25 +1,27 @@
 import {Request, Response, NextFunction} from 'express';
+import { ApiRequestError } from './friendErrors';
 
-export class NotLoggedError extends Error {
-    public statusCode: number;
-    constructor() {
-        super("You are not logged in!");
-        this.name = "NotLoggedError";
-        this.statusCode = 401;
+export class AuthError extends ApiRequestError {
+    constructor(message: string, type: string, statusCode: number) {
+        super(message, type, statusCode);
     }
 }
 
-export class UserNotFoundError extends Error {
-    public statusCode: number;
+export class NotLoggedError extends AuthError {
     constructor() {
-        super("User not found");
-        this.name = "UserNotFoundError"
-        this.statusCode = 404;
+        super("You are not logged in!", "NotLoggedError", 401);
     }
 }
+
+export class UserNotFoundError extends AuthError {
+    constructor() {
+        super("User not found", "UserNotFoundError", 404);
+    }
+}
+
 
 export const authErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-    if (err instanceof NotLoggedError) {
+    if (err instanceof AuthError) {
         return res.status(err.statusCode).json({
             errors: [
                 {

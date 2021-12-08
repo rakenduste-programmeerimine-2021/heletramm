@@ -1,5 +1,4 @@
-//import cors from 'cors';
-var cors = require('cors');
+import cors from 'cors';
 import express, {Request, Response} from 'express';
 import authRoutes from './routes/authRoutes';
 import chatRoutes from './routes/chatRoutes';

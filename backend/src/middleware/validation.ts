@@ -4,7 +4,9 @@ import { body } from "express-validator";
 import { getConnection } from "typeorm";
 import { Room } from "../model/Room";
 import { User } from "../model/User";
+import { Friend } from '../model/Friend';
 import { ReqWithUser } from "./authorization";
+import {AlreadyFriendError} from '../error_handling/friendErrors';
 
 const validationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
@@ -54,13 +56,21 @@ export const loginValidation: ValidationChain[] = [
 export const friendAddValidation: ValidationChain[] = [
     body('friend_id')
         .isInt({min: 0})
-        .custom(async (friend_id: number) => {
+        .custom(async (friend_id: number, {req}) => {
             const userRepository = getConnection().getRepository(User);
+            const friendRepository = getConnection().getRepository(Friend);
             const user = await userRepository.findOne({id: friend_id});
 
             if (!user) throw new Error("User doesn't exist");
-        })
+
+            const me = await userRepository.findOne({id: req.user.id})
+            const friendExists = await friendRepository.findOne({friend_of: me});
+            if (friendExists) throw new AlreadyFriendError()
+
+    })
 ]
+
+
 
 export const chatHistoryValidation: ValidationChain[] = [
     body('room_id')

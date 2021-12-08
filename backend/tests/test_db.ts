@@ -77,6 +77,29 @@ describe("Friends", () => {
         expect(response.body.message).to.equal('Friend added successfully');
     })
 
+    it('Cant add the same friend twice', async () => {
+        const friendToAdd = await userRepository.findOne({email: testAccount2.email});
+
+        const response = await chai.request('http://localhost:3002')
+        .post('/friend/add')
+        .auth(accessToken, {type: 'bearer'})
+        .send({
+            friend_id: friendToAdd.id
+        })
+        expect(response.body.errors).to.not.be.null;
+    })
+
+    it('Cant add a person who doesnt exist', async () => {
+        const response = await chai.request('http://localhost:3002')
+        .post('/friend/add')
+        .auth(accessToken, {type: 'bearer'})
+        .send({
+            friend_id: 9999
+        })
+        expect(response.body.errors).to.not.be.null;
+    })
+
+
     it('Friend list API', async () => {
         const response = await chai.request('http://localhost:3002')
         .get('/friend/me')

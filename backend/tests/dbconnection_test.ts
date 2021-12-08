@@ -68,6 +68,22 @@ describe('Registration test', () => {
             done();
         })
     })
+
+    it('Login validation', (done) => {
+        chai.request("http://localhost:3002")
+        .post('/register')
+        .send({
+            username: testAccount.username,
+            email: testAccount.email,
+            password: testAccount.password
+        })
+        .end((err, res) => {
+            if (err) throw Error(err);
+            expect(res.body.errors).to.not.be.null;
+            expect(res.body.errors[0]).to.have.property('msg', 'Username already exists')
+            done();
+        })
+    })
     
     const agent = chai.request.agent("http://localhost:3002");
 

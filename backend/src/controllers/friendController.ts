@@ -1,9 +1,10 @@
 import { Response } from "express";
 import { getConnection } from "typeorm";
-import { UserNotFoundError } from "../error_handling/authErrors";
 import { ReqWithUser } from "../middleware/authorization";
 import { Friend } from "../model/Friend";
 import { User } from "../model/User";
+import { AlreadyFriendError } from "../error_handling/friendErrors";
+
 
 
 export const AddFriend = async (req: ReqWithUser, res: Response) => {
@@ -13,11 +14,16 @@ export const AddFriend = async (req: ReqWithUser, res: Response) => {
     const userRepository = connection.getRepository(User);
     const friendRepository = connection.getRepository(Friend);
 
+    const me = await userRepository.findOne({id: req.user.id});
+    if (!me) throw Error("Me not found");
+
+    const friendExists = await friendRepository.findOne({friend_of: me});
+
+    if (friendExists) throw new AlreadyFriendError();
+
     const friendToAdd = await userRepository.findOne({id: friend_id});
     if (!friendToAdd) throw new Error('');
 
-    const me = await userRepository.findOne({id: req.user.id});
-    if (!me) throw Error("Me not found");
 
 
     const friendEntry = new Friend();
