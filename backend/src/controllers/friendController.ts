@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { getConnection } from "typeorm";
 import { ReqWithUser } from "../middleware/authorization";
 import { Friend } from "../model/Friend";
@@ -7,7 +7,7 @@ import { AlreadyFriendError } from "../error_handling/friendErrors";
 
 
 
-export const AddFriend = async (req: ReqWithUser, res: Response) => {
+export const AddFriend = async (req: ReqWithUser, res: Response, next: NextFunction) => {
     const {friend_id} = req.body;
 
     const connection = getConnection();
@@ -19,7 +19,7 @@ export const AddFriend = async (req: ReqWithUser, res: Response) => {
 
     const friendExists = await friendRepository.findOne({friend_of: me});
 
-    if (friendExists) throw new AlreadyFriendError();
+    if (friendExists) next(new AlreadyFriendError());
 
     const friendToAdd = await userRepository.findOne({id: friend_id});
     if (!friendToAdd) throw new Error('');

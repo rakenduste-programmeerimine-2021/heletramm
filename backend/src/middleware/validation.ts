@@ -56,17 +56,11 @@ export const loginValidation: ValidationChain[] = [
 export const friendAddValidation: ValidationChain[] = [
     body('friend_id')
         .isInt({min: 0})
-        .custom(async (friend_id: number, {req}) => {
+        .custom(async (friend_id: number) => {
             const userRepository = getConnection().getRepository(User);
-            const friendRepository = getConnection().getRepository(Friend);
             const user = await userRepository.findOne({id: friend_id});
 
             if (!user) throw new Error("User doesn't exist");
-
-            const me = await userRepository.findOne({id: req.user.id})
-            const friendExists = await friendRepository.findOne({friend_of: me});
-            if (friendExists) throw new AlreadyFriendError()
-
     })
 ]
 

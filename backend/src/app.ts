@@ -4,8 +4,9 @@ import authRoutes from './routes/authRoutes';
 import chatRoutes from './routes/chatRoutes';
 import friendRoutes from './routes/friendRoutes';
 import cookieParser from 'cookie-parser';
-import {authErrorHandler} from './error_handling/authErrors';
+import {AuthErrorHandler} from './error_handling/authErrors';
 import dotenv from 'dotenv';
+import { FriendErrorHandler } from './error_handling/friendErrors';
 dotenv.config();
 
 const corsOptions={
@@ -22,7 +23,8 @@ expressApp.use(cookieParser());
 expressApp.use(authRoutes);
 expressApp.use(chatRoutes);
 expressApp.use('/friend', friendRoutes);
-expressApp.use(authErrorHandler);
+expressApp.use(AuthErrorHandler);
+expressApp.use(FriendErrorHandler);
 
 expressApp.get('/', (req: Request, res: Response) => {
     res.send("This is the default path");

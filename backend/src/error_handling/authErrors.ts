@@ -20,7 +20,7 @@ export class UserNotFoundError extends AuthError {
 }
 
 
-export const authErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+export const AuthErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof AuthError) {
         return res.status(err.statusCode).json({
             errors: [
