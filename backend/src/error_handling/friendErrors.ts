@@ -16,6 +16,12 @@ export class FriendError extends ApiRequestError {
     }
 }
 
+export class NoUsersFound extends FriendError {
+    constructor() {
+        super("No matching users found", "NoUsersFound", 406)
+    }
+}
+
 
 export class AlreadyFriendError extends FriendError {
     constructor() {

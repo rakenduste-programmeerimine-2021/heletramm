@@ -99,6 +99,29 @@ describe("Friends", () => {
         expect(response.body.errors).to.not.be.null;
     })
 
+    it('Can find users to add', async () => {
+        const response = await chai.request('http://localhost:3002')
+        .get('/friend/find')
+        .auth(accessToken, {type: 'bearer'})
+        .send({
+            username: "test"
+        })
+
+        expect(response.body).length.to.be.greaterThan(0)
+        expect(response.body[1]).to.have.property('username', "testuser1")
+    })
+
+    it('NoUsersFound error', async () => {
+        const response = await chai.request('http://localhost:3002')
+        .get('/friend/find')
+        .auth(accessToken, {type: 'bearer'})
+        .send({
+            username: "999"
+        })
+
+        expect(response.body.errors).to.not.be.length(0)
+    })
+
 
     it('Friend list API', async () => {
         const response = await chai.request('http://localhost:3002')

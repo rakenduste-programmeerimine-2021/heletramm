@@ -1,9 +1,9 @@
 import { NextFunction, Response } from "express";
-import { getConnection } from "typeorm";
+import { getConnection, Like } from "typeorm";
 import { ReqWithUser } from "../middleware/authorization";
 import { Friend } from "../model/Friend";
 import { User } from "../model/User";
-import { AlreadyFriendError } from "../error_handling/friendErrors";
+import { AlreadyFriendError, NoUsersFound } from "../error_handling/friendErrors";
 
 
 
@@ -56,4 +56,17 @@ export const MyFriends = async (req: ReqWithUser, res: Response) => {
 
 
     res.status(200).json({friends});
+}
+
+
+export const Find = async (req: ReqWithUser, res: Response, next: NextFunction)  => {
+    const {username} = req.body;
+    const userRepository = getConnection().getRepository(User);
+
+    const users = await userRepository.find({username: Like(`%${username}%`)});
+    
+    if (users.length < 1) return next(new NoUsersFound());
+
+    res.status(200).send([...users]);
+
 }
