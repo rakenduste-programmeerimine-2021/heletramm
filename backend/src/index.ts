@@ -15,7 +15,6 @@ const dbConnection: ConnectionOptions = {
     "database": "heletrammdb",
     "synchronize": true,
     "entities": ["src/model/*.ts"],
-    "logging": true
 };
 
 
