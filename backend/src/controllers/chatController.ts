@@ -1,8 +1,6 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import {Socket} from 'socket.io';
 import { getConnection } from "typeorm";
-import { ReqWithUser } from "../middleware/authorization";
-import { ReqChat } from "../middleware/chatMiddleware";
 import { Message } from "../model/Message";
 import { Room } from "../model/Room";
 import { User } from "../model/User";
@@ -29,7 +27,8 @@ export const userMessage = (socket: Socket, room: Room, message: string) => {
     }
 }
 
-export const chatHistory = async (req: ReqWithUser, res: Response) => {
+export const chatHistory = async (req: Request, res: Response) => {
+
     const {room_id} = req.body;
     const roomRepository = getConnection().getRepository(Message);
     const messages = await roomRepository.find({room: room_id});
@@ -44,7 +43,7 @@ export const connectToRoom = (socket: Socket, room_name: string) => {
 }
 
 //REST routes
-export const initChatConnection = (req: ReqChat, res: Response) => {
+export const initChatConnection = (req: Request, res: Response) => {
     res.status(200).json(req.room);
     return;
 

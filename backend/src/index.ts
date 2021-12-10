@@ -14,7 +14,7 @@ const dbConnection: ConnectionOptions = {
     "password": "root",
     "database": "heletrammdb",
     "synchronize": true,
-    "entities": ["src/model/*.ts"]
+    "entities": ["src/model/*.ts"],
 };
 
 

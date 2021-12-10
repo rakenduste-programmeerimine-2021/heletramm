@@ -6,6 +6,7 @@ export enum RoomType {
     GROUP = "group"
 }
 
+//Halb disain, oleks voinud private chati ja group chati eraldi hoida
 @Entity()
 export class Room {
     @PrimaryGeneratedColumn()
@@ -13,6 +14,9 @@ export class Room {
 
     @Column({type: "varchar", length: 100})
     name: string;
+
+    @Column({type: 'varchar', nullable: true})
+    group_name: string
 
     @Column({
         type: "enum",

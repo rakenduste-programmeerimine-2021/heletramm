@@ -3,7 +3,6 @@ import {getConnection, getRepository} from 'typeorm';
 import {User} from '../model/User';
 import {hash, genSalt, compare} from 'bcrypt';
 import {sign} from 'jsonwebtoken';
-import {ReqWithUser} from '../middleware/authorization';
 import {verify} from 'jsonwebtoken';
 
 interface RefreshTokenResponse {

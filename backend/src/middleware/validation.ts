@@ -59,14 +59,15 @@ export const friendAddValidation: ValidationChain[] = [
             const user = await userRepository.findOne({id: friend_id});
 
             if (!user) throw new Error("User doesn't exist");
-        })
+    })
 ]
 
 export const chatHistoryValidation: ValidationChain[] = [
     body('room_id')
         .isInt({min: 0})
         .custom(async (room_id: number, meta) => {
-            const req = meta.req as ReqWithUser;
+            const req = meta.req as Request;
+
             const roomRepository = getConnection().getRepository(Room);
             const {users} = await roomRepository.findOne({
                 relations: ['users'],

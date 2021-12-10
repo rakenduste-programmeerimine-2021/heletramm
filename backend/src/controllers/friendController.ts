@@ -1,24 +1,27 @@
-import { Response } from "express";
-import { getConnection } from "typeorm";
-import { UserNotFoundError } from "../error_handling/authErrors";
-import { ReqWithUser } from "../middleware/authorization";
+import { NextFunction, Request, Response } from "express";
+import { getConnection, Like } from "typeorm";
 import { Friend } from "../model/Friend";
 import { User } from "../model/User";
+import { AlreadyFriendError, NoUsersFound } from "../error_handling/friendErrors";
 
 
-export const AddFriend = async (req: ReqWithUser, res: Response) => {
+export const AddFriend = async (req: Request, res: Response, next: NextFunction) => {
+
     const {friend_id} = req.body;
 
     const connection = getConnection();
     const userRepository = connection.getRepository(User);
     const friendRepository = connection.getRepository(Friend);
+    const me = await userRepository.findOne({id: req.user.id});
+    if (!me) throw Error("Me not found");
+
+    const friendExists = await friendRepository.findOne({friend_of: me});
+
+    if (friendExists) next(new AlreadyFriendError());
 
     const friendToAdd = await userRepository.findOne({id: friend_id});
     if (!friendToAdd) throw new Error('');
-      
 
-    const me = await userRepository.findOne({id: req.user.id});
-    if (!me) throw Error("Me not found");
 
 
     const friendEntry = new Friend();
@@ -34,7 +37,7 @@ export const AddFriend = async (req: ReqWithUser, res: Response) => {
 
 }
 
-export const MyFriends = async (req: ReqWithUser, res: Response) => {
+export const MyFriends = async (req: Request, res: Response) => {
     const connection = getConnection();
     const userRepository = connection.getRepository(User);
     const friendRepository = connection.getRepository(Friend);
@@ -51,4 +54,17 @@ export const MyFriends = async (req: ReqWithUser, res: Response) => {
 
 
     res.status(200).json({friends});
+}
+
+
+export const Find = async (req: Request, res: Response, next: NextFunction)  => {
+    const {username} = req.body;
+    const userRepository = getConnection().getRepository(User);
+
+    const users = await userRepository.find({username: Like(`%${username}%`)});
+    
+    if (users.length < 1) return next(new NoUsersFound());
+
+    res.status(200).send([...users]);
+
 }

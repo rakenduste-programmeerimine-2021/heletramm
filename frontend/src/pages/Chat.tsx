@@ -204,7 +204,6 @@ const Chat: React.FC<Props> = (props: Props) => {
                                     })
                                 }
                             </ScrollableFeed>
-                            
                             <Center>
                                 
                                 {addFriendToggled ?
