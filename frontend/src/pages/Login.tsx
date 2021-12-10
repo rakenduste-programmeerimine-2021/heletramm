@@ -1,7 +1,7 @@
 import React, {useState, useContext, useEffect} from 'react';
 import { Context } from '../store/Index';
 import { FormControl, FormLabel, FormHelperText} from '@chakra-ui/form-control';
-import {Flex, Box, Heading, Button, Link, Divider, chakra} from "@chakra-ui/react";
+import {Flex, Box, Heading, Button, Link, Divider, chakra, Text} from "@chakra-ui/react";
 import { FaLock, FaMailBulk } from 'react-icons/fa';
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
 import axios from "axios";
@@ -31,6 +31,7 @@ const Login: React.FC<Props> = (props: Props) => {
     const [token, setToken] = useState("");
     const [nickname, setNickname] = useState("");
     const [loggedIn, setLoggedIn] = useState(false);
+    const [error, setError] = useState<string>("");
     //const [state, dispatch] = useContext(Context);
 
     useEffect(() => {
@@ -42,16 +43,29 @@ const Login: React.FC<Props> = (props: Props) => {
 
         props.onSubmit(email, password);
 
-        const response =  await axios.post("http://localhost:3001/login", {
+        axios.post("http://localhost:3001/login", {
             email: email,
             password: password
-        }, {withCredentials: true})
+        }, {withCredentials: true}).then((response) => {
 
-        if (response.data.token != undefined && response.data.token != null) {
-            setToken(response.data.token);
-            setNickname(response.data.username);
-            if (!response.data.token) return;
-        }
+            console.log(response.status);
+
+            if (response.data.token != undefined && response.data.token != null) {
+                setToken(response.data.token);
+                setNickname(response.data.username);
+                if (!response.data.token) return;
+            }
+
+            window.location.reload(false);
+        }).catch((error) => {
+            console.log(error.response.status);
+
+            if(error.response.status == 401) {
+                setError("Invalid credentials!");
+            }
+        })
+
+        
         
         const user: User = {
             token: token,
@@ -65,14 +79,14 @@ const Login: React.FC<Props> = (props: Props) => {
         //await dispatch(loginUser(user));
 
         //navigate("/");
-        window.location.reload(false);
+        
     }
 
     
 
     return (
         <div>
-            <Flex width="full" minH="100vh" align="center" justifyContent="center" backgroundColor="#45B69C">
+            <Flex width="full" minH="100vh" align="center" justifyContent="center" backgroundColor="#023E8A">
                 <Box p={20} borderWidth={2} borderRadius={8} boxShadow="lg" backgroundColor="whiteAlpha.800">
                     <Box textAlign="center" mb={14}>
                         <Heading>Login</Heading>
@@ -101,16 +115,18 @@ const Login: React.FC<Props> = (props: Props) => {
                                 </InputGroup>
                                 <FormHelperText>Don't ever share your password with anyone</FormHelperText>
                             </FormControl>
-                            <Button data-testid="submit" width="full" mt={4} type="submit" bgColor="#45B69C">
+                            <Button data-testid="submit" width="full" mt={4} type="submit" bgColor="#0096C7">
                                 Sign In
                             </Button>
                         </form>
                     </Box>
-                    <Divider />
+                    <Divider borderColor="#023E8A" />
                     <Box mt={6} textAlign="center">
+                        <Text color="red">{error}</Text>
+                        <br />
                         Don't have an account yet?
                         <br />
-                        <Link href="/signup" color="#21D19F">
+                        <Link href="/signup" color="#0096C7">
                             Sign up
                         </Link>
                     </Box>

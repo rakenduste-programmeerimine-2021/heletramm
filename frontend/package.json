@@ -34,7 +34,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "jest",
+    "test": "jest --verbose false --detectOpenHandles",
     "eject": "react-scripts eject",
     "test:watch": "jest --watch"
   },

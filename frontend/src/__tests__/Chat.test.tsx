@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, getByText } from "@testing-library/react";
 import { register } from "../serviceWorker";
 import Chat, {Props} from "../pages/Chat";
 import Login from "../pages/Login";
@@ -9,16 +9,12 @@ import axios from "axios";
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>
 
-beforeEach(() => {
-  mockedAxios.post.mockResolvedValue({ email: 'testacc@gmail.com', password: "1234" });
-});
-
 function renderChat (props: Partial<Props> = {}) {
   const defaultProps = {
-    onMessageChange() {
+    onMenuToggle() {
       return;
     },
-    onConnectingToChat() {
+    onRenderingChat() {
       return;
     },
     onAddFriendChange() {
@@ -27,7 +23,10 @@ function renderChat (props: Partial<Props> = {}) {
     onMessageSubmit() {
       return
     },
-    onAddFriendSubmit() {
+    onAddFriendToggle() {
+      return
+    },
+    onGetFriends() {
       return
     }
   };
@@ -35,45 +34,58 @@ function renderChat (props: Partial<Props> = {}) {
   return render(<Index><Chat {...defaultProps} {...props} /></Index>)
 }
 
-// test("Connect to chat with friend", async () => {
-//   const { findByTestId } = renderChat();
+// describe("Chat tests", () => {
+//   test("Add friend toggle", async () => {
+//     const onGetFriends = jest.fn();
 
-//   const friend = await findByTestId("friend");
+//     const fakeFriends = [
+//       {
+//         user_id: "1",
+//         username: "test1"
+//       },
+//       {
+//         user_id: "2",
+//         username: "test2"
+//       }
+//     ]
 
-//   fireEvent.click(friend);
+//     mockedAxios.get.mockResolvedValue(fakeFriends);
 
-//   expect(friend).toHaveBeenCalledWith({});
-// });
+//     const { findByTestId } = renderChat({ onGetFriends });
 
-test("Add friend", async () => {
-  const onAddFriendSubmit = jest.fn();
+//     const friend = await findByTestId("friend");
+
+//     expect(friend).toBeInTheDocument();
+//   });
+
+// })
+
+test("Toggle add friend", async () => {
+  const onAddFriendToggle = jest.fn();
   
-  const {findByTestId} = renderChat({ onAddFriendSubmit });
+  const {findByTestId} = renderChat({ onAddFriendToggle });
   const addFriendToggle = await findByTestId("addfriendtoggle");
-  const addFriendSubmit = await findByTestId("addfriendsubmit");
+  //const addFriendSubmit = await findByTestId("addfriendsubmit");
   fireEvent.click(addFriendToggle);
 
-  const friendid = await findByTestId("friendid");
+  // const friendid = await findByTestId("friendid");
 
-  fireEvent.change(friendid, { target: { value: 1 } });
+  // fireEvent.change(friendid, { target: { value: 1 } });
 
-  fireEvent.click(addFriendSubmit);
+  // fireEvent.click(addFriendSubmit);
 
-  expect(onAddFriendSubmit).toHaveBeenCalledWith(1);
+  expect(onAddFriendToggle).toHaveBeenCalledWith(true);
 })
 
 
-// test("Can insert email", async () => {
-//   const onEmailChange = jest.fn();
+test("Loads chat window properly", async () => {
   
-//   const {findByTestId} = renderRegisterForm({ onEmailChange })
-//   const email = await findByTestId("email");
+  const {findByTestId} = renderChat()
+  const welcomeMessage = screen.getByText("Click on one of your friends to chat with them!");
 
+  expect(welcomeMessage).toHaveTextContent("Click on one of your friends to chat with them!");
+})
 
-//   fireEvent.change(email, { target: { value: "tests@gmail.com" } });
-
-//   expect(onEmailChange).toHaveBeenCalledWith("tests@gmail.com");
-// })
 
 // test("Can insert password", async () => {
 //   const onPasswordChange = jest.fn();
