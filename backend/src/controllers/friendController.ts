@@ -1,13 +1,12 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { getConnection, Like } from "typeorm";
-import { ReqWithUser } from "../middleware/authorization";
 import { Friend } from "../model/Friend";
 import { User } from "../model/User";
 import { AlreadyFriendError, NoUsersFound } from "../error_handling/friendErrors";
 
 
 
-export const AddFriend = async (req: ReqWithUser, res: Response, next: NextFunction) => {
+export const AddFriend = async (req: Request, res: Response, next: NextFunction) => {
     const {friend_id} = req.body;
 
     const connection = getConnection();
@@ -39,7 +38,7 @@ export const AddFriend = async (req: ReqWithUser, res: Response, next: NextFunct
 
 }
 
-export const MyFriends = async (req: ReqWithUser, res: Response) => {
+export const MyFriends = async (req: Request, res: Response) => {
     const connection = getConnection();
     const userRepository = connection.getRepository(User);
     const friendRepository = connection.getRepository(Friend);
@@ -59,7 +58,7 @@ export const MyFriends = async (req: ReqWithUser, res: Response) => {
 }
 
 
-export const Find = async (req: ReqWithUser, res: Response, next: NextFunction)  => {
+export const Find = async (req: Request, res: Response, next: NextFunction)  => {
     const {username} = req.body;
     const userRepository = getConnection().getRepository(User);
 
