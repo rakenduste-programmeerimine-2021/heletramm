@@ -10,6 +10,10 @@ import { IoIosChatboxes, IoMdArrowRoundUp } from "react-icons/io"
 import React from 'react';
 import {Context} from "../store/Index";
 
+export interface Props {
+  onMenuToggle: (isOpen: boolean) => void;
+}
+
 const MenuIcon = chakra(HamburgerIcon);
 const CloseMenuIcon = chakra(IoMdArrowRoundUp);
 const ChatBox = chakra(IoIosChatboxes);
@@ -60,12 +64,15 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
             <Spacer />
 
             <Menu>
-              <MenuButton as={ChakraButton} onClick={() => setMenuOpen(!menuOpen)}>
+              <MenuButton data-testid="menutogglebutton" as={ChakraButton} onClick={() => setMenuOpen(!menuOpen)}>
                 {menuOpen ? <MenuIcon /> : <CloseMenuIcon />}
               </MenuButton>
               <MenuList borderColor="#48CAE4" borderWidth={4}>
                   <Center>  
                     <Avatar mb={4} size="lg" name={username} src="" />
+                  </Center>
+                  <Center>
+                    <Text>Logged in as:</Text>
                   </Center>
                   <Center>
                     <Text mb={4} fontSize="xl">{username}</Text>

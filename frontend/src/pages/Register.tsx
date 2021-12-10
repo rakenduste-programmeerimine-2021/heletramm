@@ -98,7 +98,7 @@ const Register: React.FC<Props> = (props: Props) => {
                                 <Input data-testid="password" outlineColor="blackAlpha.800" type="password" onChange={e => {setPassword(e.currentTarget.value); props.onPasswordChange(e.currentTarget.value)}} />
                             </InputGroup>
                         </FormControl>
-                        <Divider />
+                        <Divider borderColor="#023E8A" />
                         <Stack align="center">
                             <Button data-testid="submit" width="80%" mt={8} type="submit" bgColor="#0096C7">
                                 Register
