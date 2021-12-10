@@ -4,9 +4,7 @@ import { body } from "express-validator";
 import { getConnection } from "typeorm";
 import { Room } from "../model/Room";
 import { User } from "../model/User";
-import { Friend } from '../model/Friend';
 import { ReqWithUser } from "./authorization";
-import {AlreadyFriendError} from '../error_handling/friendErrors';
 
 const validationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
