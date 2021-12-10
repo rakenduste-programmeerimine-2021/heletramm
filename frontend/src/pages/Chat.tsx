@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useCallback, useEffect, useContext } from 'react';
 import {io} from 'socket.io-client';
 import axios from "axios";
-import { Flex, Box, Heading, Spacer, ListItem, VStack} from "@chakra-ui/layout";
+import { Flex, Box, Heading, Spacer, HStack, VStack} from "@chakra-ui/layout";
 import {List, Input, WrapItem, Avatar, Button, Text, Divider, Menu, MenuButton, MenuItem, Center} from "@chakra-ui/react";
 import MessageBox from "../components/Message";
 import MessageFeed from "../components/MessageFeed";
@@ -16,10 +16,16 @@ export interface Props {
   onConnectingToChat: (friendId: string) => void;
   onAddFriendChange: (friendId: string) => void;
   onMessageSubmit: (message: string) => void;
-  onAddFriendSubmit: (friendId: string | undefined) => void;
+  onAddFriendToggle: () => void;
+  onGetFriends: () => void;
 }
 
 const Chat: React.FC<Props> = (props: Props) => {
+
+    interface Error {
+        type: string,
+        msg: string
+    }
 
     interface User {
     id: number,
@@ -35,7 +41,8 @@ const Chat: React.FC<Props> = (props: Props) => {
 
     interface FriendsResponse {
         id: number,
-        friends: Friend[]
+        friends: Friend[], 
+        errors: Error[]
     }
 
     interface Room {
@@ -79,13 +86,15 @@ const Chat: React.FC<Props> = (props: Props) => {
 
         chatHistoryResponse.data.messages.map((msg) => testMessages.push(msg.message));
         setMessagesSet(true);
-
     }
 
-    const getFriends = useCallback(async () => {
+    export function getFriends: React.FC<void> = useCallback(async () => {
+        props.onGetFriends();
+        console.log(state.auth.token);
         const response = await axios.get<FriendsResponse>("http://localhost:3001/friend/me", {headers: {
             Authorization: 'Bearer ' + state.auth.token
         }});
+        console.log(response.data);
         const users = response.data.friends.map((friend) => friend.user);
         console.log(users);
         console.log(response.data);
@@ -174,15 +183,16 @@ const Chat: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            <Flex width="full" height="100vh" alignItems="center" justifyContent="center" backgroundColor="#45B69C">
-                    <Box w="20%" h="80%" bg="#7293A0" ml={8} borderRadius={8} border="2px">
+            <Flex width="full" height="100vh" alignItems="center" justifyContent="center" backgroundColor="#0077B6">
+                    <Box w="20%" h="80%" bg="#0096C7" ml={8} borderRadius={8} borderColor="#023E8A" borderWidth={4}>
                         <Center>
-                            <Heading mb={8}>Friends</Heading>
+                            <Heading mt={8} mb={8}>Friends</Heading>
                         </Center>
                         <Menu>
                             {
                                 friends.map((user) => {
-                                    return <MenuItem data-testid="friend" mb={2} onClick={() => {connectToChat(user.id); setConnectedFriend(user.username)}}>
+                                    return <MenuItem data-testid="friend" p={6} mb={4} ml={4} width="90%" borderRadius={8} bg="#0077B6" _focus={{ background: "#CAF0F8" }}  onClick={() => {connectToChat(user.id); setConnectedFriend(user.username)
+                                    ; props.onConnectingToChat(user.username)}}>
                                         <Avatar mr={8} name={user.username} src="" />
                                         <Text fontSize='2xl'>{user.username}</Text>
                                     </MenuItem>
@@ -205,18 +215,21 @@ const Chat: React.FC<Props> = (props: Props) => {
                         
                     </Box>
                     <Spacer />
-                    {connectedToRoom ? <Box w="70%" h="80%" bg="#7293A0" mr={8} borderRadius={8} border="2px">
-                        <Heading ml={8} mt={4}>{connectedFriend}</Heading>
-                        <Divider mt={6} />
+                    {connectedToRoom ? <Box w="70%" h="80%" bg="#ADE8F4" mr={8} borderRadius={8} borderColor="#48CAE4" borderWidth={4}>
+                        <HStack borderRadius="2px" alignItems="baseline" pt={4} paddingBottom={4} bg="blue.500" br={8}>
+                            <Avatar ml={8} mr={8} name={connectedFriend} src="" />
+                            <Heading>{connectedFriend}</Heading>
+                        </HStack>
+                        {/* <Divider mt={6} /> */}
                         <ScrollableFeed>
                             <MessageFeed messages={testMessages} />
                         </ScrollableFeed>
                         <form onSubmit={handleSubmit}>
                             <Input ml={10} width="80%" placeholder="Message...." bg="white" size="lg" value={message} onChange={(event) => setMessage(event.currentTarget.value)}/>
-                            <Button ml={8} type="submit">Send</Button>
+                            <Button alignSelf="center" width="8%" ml={8} backgroundColor="#0077B6" type="submit">Send</Button>
                         </form>
                     </Box> :
-                     <Box w="70%" h="80%" bg="#7293A0" mr={8} borderRadius={8} border="2px">   
+                     <Box w="70%" h="80%" bg="#0077B6" mr={8} borderRadius={8} borderColor="#48CAE4" borderWidth={4}>   
                             <Center h="80%">
                                 <Heading>Click on one of your friends to chat with them!</Heading>
                             </Center>

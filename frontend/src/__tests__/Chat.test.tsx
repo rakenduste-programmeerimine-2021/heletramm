@@ -9,10 +9,6 @@ import axios from "axios";
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>
 
-beforeEach(() => {
-  mockedAxios.post.mockResolvedValue({ email: 'testacc@gmail.com', password: "1234" });
-});
-
 function renderChat (props: Partial<Props> = {}) {
   const defaultProps = {
     onMessageChange() {
@@ -27,7 +23,7 @@ function renderChat (props: Partial<Props> = {}) {
     onMessageSubmit() {
       return
     },
-    onAddFriendSubmit() {
+    onAddFriendToggle() {
       return
     }
   };
@@ -35,32 +31,48 @@ function renderChat (props: Partial<Props> = {}) {
   return render(<Index><Chat {...defaultProps} {...props} /></Index>)
 }
 
-// test("Connect to chat with friend", async () => {
-//   const { findByTestId } = renderChat();
+describe("Chat tests", () => {
+  test("Add friend toggle", async () => {
+    const onAddFriendToggle = jest.fn();
 
-//   const friend = await findByTestId("friend");
+    const fakeFriends = [
+      {
+        user_id: "1",
+        username: "test1"
+      },
+      {
+        user_id: "2",
+        username: "test2"
+      }
+    ]
 
-//   fireEvent.click(friend);
+    mockedAxios.get.mockResolvedValue(fakeFriends);
 
-//   expect(friend).toHaveBeenCalledWith({});
-// });
+    const { findByTestId } = renderChat({ onConnectingToChat });
 
-test("Add friend", async () => {
-  const onAddFriendSubmit = jest.fn();
-  
-  const {findByTestId} = renderChat({ onAddFriendSubmit });
-  const addFriendToggle = await findByTestId("addfriendtoggle");
-  const addFriendSubmit = await findByTestId("addfriendsubmit");
-  fireEvent.click(addFriendToggle);
+    const friend = await findByTestId("friend");
 
-  const friendid = await findByTestId("friendid");
+    expect(friend).toBeInTheDocument();
+  });
 
-  fireEvent.change(friendid, { target: { value: 1 } });
-
-  fireEvent.click(addFriendSubmit);
-
-  expect(onAddFriendSubmit).toHaveBeenCalledWith(1);
 })
+
+// test("Add friend", async () => {
+//   const onAddFriendSubmit = jest.fn();
+  
+//   const {findByTestId} = renderChat({ onAddFriendSubmit });
+//   const addFriendToggle = await findByTestId("addfriendtoggle");
+//   const addFriendSubmit = await findByTestId("addfriendsubmit");
+//   fireEvent.click(addFriendToggle);
+
+//   const friendid = await findByTestId("friendid");
+
+//   fireEvent.change(friendid, { target: { value: 1 } });
+
+//   fireEvent.click(addFriendSubmit);
+
+//   expect(onAddFriendSubmit).toHaveBeenCalledWith(1);
+// })
 
 
 // test("Can insert email", async () => {

@@ -62,7 +62,7 @@ const Register: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            <Flex width="full" height="100vh" align="center" justifyContent="center" backgroundColor="#45B69C">
+            <Flex width="full" height="100vh" align="center" justifyContent="center" backgroundColor="#023E8A">
                 <Box width="25%" p={20} borderWidth={2} borderRadius={8} boxShadow="lg" backgroundColor="whiteAlpha.800">
                     <Box textAlign="center" marginBottom="2rem">
                         <Heading>Sign up</Heading>
@@ -100,7 +100,7 @@ const Register: React.FC<Props> = (props: Props) => {
                         </FormControl>
                         <Divider />
                         <Stack align="center">
-                            <Button data-testid="submit" width="80%" mt={8} type="submit" bgColor="#45B69C">
+                            <Button data-testid="submit" width="80%" mt={8} type="submit" bgColor="#0096C7">
                                 Register
                             </Button>
                         </Stack>
@@ -108,7 +108,7 @@ const Register: React.FC<Props> = (props: Props) => {
                     <Box mt={6} textAlign="center">
                         Already have an account?
                         <br />
-                        <Link href="/login" color="#21D19F">
+                        <Link href="/login" color="#0096C7">
                             Sign in
                         </Link>
                     </Box>

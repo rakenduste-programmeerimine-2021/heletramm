@@ -1,18 +1,24 @@
 import {useState, useContext, useEffect} from 'react';
 import axios from "axios";
-import {useColorMode, Spacer, Switch, Box, Flex, Text, Heading, Stack} from '@chakra-ui/react';
-import {Button as ChakraButton} from "@chakra-ui/react";
+import {Spacer, Flex, Text, Avatar, Stack, Center, Menu, MenuButton, MenuList, MenuItem} from '@chakra-ui/react';
+import {Button as ChakraButton, chakra} from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import {useNavigate} from "react-router-dom";
 import {RouteProps, Link} from 'react-router-dom';
 import { logoutUser } from "../store/actions";
+import { IoIosChatboxes, IoMdArrowRoundUp } from "react-icons/io"
 import React from 'react';
 import {Context} from "../store/Index";
+
+const MenuIcon = chakra(HamburgerIcon);
+const CloseMenuIcon = chakra(IoMdArrowRoundUp);
+const ChatBox = chakra(IoIosChatboxes);
 
 
 const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
 
   const [state, dispatch] = useContext(Context);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState();
 
@@ -43,35 +49,67 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
 
   return (
     <div>
-        <Flex as="nav" justify="space-between" wrap="wrap" top="1rem" right="1rem" align="center" backgroundColor="#D8DDEF" borderRadius={8}>
-          <Stack direction={{ base: "column", md: "row" }} width={{ base: "full", md: "auto" }} alignItems="center" flexGrow={1} mt={{ base: 4, md: 0 }} ml={4}>
+      <Flex as="nav" justify="space-between" wrap="wrap" right="1rem" align="center" backgroundColor="#0077B6">
+          <Stack direction={{ base: "column", md: "row" }} width={{ base: "full", md: "auto" }} alignItems="center" flexGrow={1} ml={12} mr={12}>
             <Link to="/" >
               <ChakraButton as="a" variant="ghost" aria-label="Home" my={5} w="100%">
-                Chat
+                <ChatBox boxSize={8} /> 
               </ChakraButton>
             </Link>
 
             <Spacer />
 
-              { loggedIn ? 
-              <span><Text mr={8}>Signed in as: {username}</Text>
-              <ChakraButton onClick={handleLogout}>Log out</ChakraButton></span> :
-              
-                <Link to="/login" >
-                  <ChakraButton as="a" variant="ghost" aria-label="Contact" my={5} w="100%">
-                    Sign in
-                  </ChakraButton>
-                </Link>}
-
-                {/* // <Link to="/signup">
-                //   <Button as="a" variant="ghost" aria-label="Contact" my={5} w="100%">
-                //     Sign up
-                //   </Button>
-                // </Link> */}
-            </Stack>
-        </Flex>
-     </div>
+            <Menu>
+              <MenuButton as={ChakraButton} onClick={() => setMenuOpen(!menuOpen)}>
+                {menuOpen ? <MenuIcon /> : <CloseMenuIcon />}
+              </MenuButton>
+              <MenuList borderColor="#48CAE4" borderWidth={4}>
+                  <Center>  
+                    <Avatar mb={4} size="lg" name={username} src="" />
+                  </Center>
+                  <Center>
+                    <Text mb={4} fontSize="xl">{username}</Text>
+                  </Center>
+                  <Center>
+                    <ChakraButton onClick={handleLogout}>Log out</ChakraButton>
+                  </Center>
+              </MenuList>
+            </Menu>
+            
+                
+          </Stack>
+      </Flex> 
+    </div>
   )
 }
 
 export default Navbar;
+
+
+// <MenuButton isActive={menuOpen} bg="#0077B6" alignContent="center" onClick={() => setMenuOpen(!menuOpen)}>
+                //   <Menu boxSize={8} />
+                // </MenuButton> : 
+                    
+              // <span><Text mr={8}>Signed in as: {username}</Text>
+              // </span> :
+                
+                // <ChakraButton onClick={() => setMenuOpen(!menuOpen)}>
+                //   <CloseMenu boxSize={8} />
+                // </ChakraButton>
+                  
+                
+                // <Link to="/login" >
+                //   <ChakraButton as="a" variant="ghost" aria-label="Contact" my={5} w="100%">
+                //     Sign in
+                //   </ChakraButton>
+                // </Link>
+
+
+
+// : 
+
+
+            
+            // 
+            
+            // }

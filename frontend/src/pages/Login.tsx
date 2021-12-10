@@ -72,7 +72,7 @@ const Login: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            <Flex width="full" minH="100vh" align="center" justifyContent="center" backgroundColor="#45B69C">
+            <Flex width="full" minH="100vh" align="center" justifyContent="center" backgroundColor="#023E8A">
                 <Box p={20} borderWidth={2} borderRadius={8} boxShadow="lg" backgroundColor="whiteAlpha.800">
                     <Box textAlign="center" mb={14}>
                         <Heading>Login</Heading>
@@ -101,16 +101,16 @@ const Login: React.FC<Props> = (props: Props) => {
                                 </InputGroup>
                                 <FormHelperText>Don't ever share your password with anyone</FormHelperText>
                             </FormControl>
-                            <Button data-testid="submit" width="full" mt={4} type="submit" bgColor="#45B69C">
+                            <Button data-testid="submit" width="full" mt={4} type="submit" bgColor="#0096C7">
                                 Sign In
                             </Button>
                         </form>
                     </Box>
-                    <Divider />
+                    <Divider borderColor="#023E8A" />
                     <Box mt={6} textAlign="center">
                         Don't have an account yet?
                         <br />
-                        <Link href="/signup" color="#21D19F">
+                        <Link href="/signup" color="#0096C7">
                             Sign up
                         </Link>
                     </Box>
