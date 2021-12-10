@@ -28,6 +28,7 @@ export const userMessage = (socket: Socket, room: Room, message: string) => {
 }
 
 export const chatHistory = async (req: Request, res: Response) => {
+
     const {room_id} = req.body;
     const roomRepository = getConnection().getRepository(Message);
     const messages = await roomRepository.find({room: room_id});

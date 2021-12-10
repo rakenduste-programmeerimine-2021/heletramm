@@ -5,14 +5,13 @@ import { User } from "../model/User";
 import { AlreadyFriendError, NoUsersFound } from "../error_handling/friendErrors";
 
 
-
 export const AddFriend = async (req: Request, res: Response, next: NextFunction) => {
+
     const {friend_id} = req.body;
 
     const connection = getConnection();
     const userRepository = connection.getRepository(User);
     const friendRepository = connection.getRepository(Friend);
-
     const me = await userRepository.findOne({id: req.user.id});
     if (!me) throw Error("Me not found");
 

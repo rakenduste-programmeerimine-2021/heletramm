@@ -4,6 +4,7 @@ import { body } from "express-validator";
 import { getConnection } from "typeorm";
 import { Room } from "../model/Room";
 import { User } from "../model/User";
+import { ReqWithUser } from "./authorization";
 
 const validationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
@@ -61,13 +62,12 @@ export const friendAddValidation: ValidationChain[] = [
     })
 ]
 
-
-
 export const chatHistoryValidation: ValidationChain[] = [
     body('room_id')
         .isInt({min: 0})
         .custom(async (room_id: number, meta) => {
             const req = meta.req as Request;
+
             const roomRepository = getConnection().getRepository(Room);
             const {users} = await roomRepository.findOne({
                 relations: ['users'],
