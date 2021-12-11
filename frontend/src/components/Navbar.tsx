@@ -18,7 +18,6 @@ const MenuIcon = chakra(HamburgerIcon);
 const CloseMenuIcon = chakra(IoMdArrowRoundUp);
 const ChatBox = chakra(IoIosChatboxes);
 
-
 const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
 
   const [state, dispatch] = useContext(Context);
@@ -43,6 +42,9 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
 
     console.log(state.auth.token);
     console.log(state.auth.user);
+    console.log(state.auth.id);
+    console.log(state.auth);
+
 
     if (state.auth.user != undefined) {
       setLoggedIn(true);
@@ -75,7 +77,7 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
                     <Text>Logged in as:</Text>
                   </Center>
                   <Center>
-                    <Text mb={4} fontSize="xl">{username}</Text>
+                    <Text mb={4} fontSize="xl">#{state.auth.id} {username}</Text>
                   </Center>
                   <Center>
                     <ChakraButton onClick={handleLogout}>Log out</ChakraButton>

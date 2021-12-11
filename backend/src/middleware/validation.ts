@@ -4,7 +4,6 @@ import { body } from "express-validator";
 import { getConnection } from "typeorm";
 import { Room } from "../model/Room";
 import { User } from "../model/User";
-import { ReqWithUser } from "./authorization";
 
 const validationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);

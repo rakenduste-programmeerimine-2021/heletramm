@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { Context } from "../store/Index";
 import ScrollableFeed from "react-scrollable-feed";
 import { useToast } from "@chakra-ui/toast";
+import { setgroups } from "process";
 
 export interface Props {
   onRenderingChat: (state: boolean) => void;
@@ -29,11 +30,11 @@ const Chat: React.FC<Props> = (props: Props) => {
     }
 
     interface User {
-    id: number,
-    username: string,
-    email: string,
-    password: string
-}
+        id: number,
+        username: string,
+        email: string,
+        password: string
+    }
 
     interface Friend {
         id: number,
@@ -44,6 +45,17 @@ const Chat: React.FC<Props> = (props: Props) => {
         id: number,
         friends: Friend[], 
         errors: Error[]
+    }
+
+    interface GroupsResponse {
+        rooms: Group[]
+    }
+
+    interface Group {
+        group_name: string,
+        id: number,
+        name: string,
+        type: string
     }
 
     interface Room {
@@ -69,7 +81,10 @@ const Chat: React.FC<Props> = (props: Props) => {
     const [messagesSet, setMessagesSet] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
     const [friendId, setFriendId] = useState<string>();
+    const [user, setUser] = useState<User>();
     const [friends, setFriends] = useState<User[]>([]);
+    const [groups, setGroups] = useState<Group[]>([]);
+    const [groupRooms, setGroupRooms] = useState<User[][]>([]);
     const [connectedToRoom, setConnectedToRoom] = useState<boolean>(false);
     const [room, setRoom] = useState<Room>();
     const [connectedFriend, setConnectedFriend] = useState<string>("");
@@ -93,12 +108,41 @@ const Chat: React.FC<Props> = (props: Props) => {
         setMessagesSet(true);
     }
 
+    const makeGroup = async(user: User) => {
+        const users = [];
+        users.push(user.id);
+        const groupResponse = await axios.post("http://localhost:3001/group/create", {user_ids: users}, {
+            headers: {
+               Authorization: 'Bearer ' + state.auth.token 
+            }
+        });
+
+        console.log(groupResponse);
+
+        // kaasa on vaja saata ainult array user id'dest
+
+        // TEE KUIDAGI USERID SELECTABLE, ET SAAKS MITU ID'D KAASA SAATA
+    }
+
+    const getGroups = useCallback(async () => {
+        const response = await axios.get<GroupsResponse>("http://localhost:3001/group/me", {
+            headers: {
+               Authorization: 'Bearer ' + state.auth.token 
+            }
+        });
+        console.log(response.data);
+        console.log(groupRooms);
+        const groups = response.data.rooms.map((group) => group);
+        console.log(groups);
+        setGroups(groups);
+    }, [])
+
     const getFriends = useCallback(async () => {
         props.onGetFriends();
         console.log(state.auth.token);
-        const response = await axios.get<FriendsResponse>("http://localhost:3001/friend/me", {headers: {
+       const response = await axios.get<FriendsResponse>('http://localhost:3001/friend/me', {headers: {
             Authorization: 'Bearer ' + state.auth.token
-        }});
+        }})
         console.log(response.data);
         const users = response.data.friends.map((friend) => friend.user);
         console.log(users);
@@ -107,8 +151,10 @@ const Chat: React.FC<Props> = (props: Props) => {
     }, [])
 
     useEffect(() => {
+        getGroups();
         getFriends();
-    }, [getFriends])
+        console.log(state.auth.token);
+    }, [])
 
     const socket = io("http://localhost:3001", {auth: {
         token: 'Bearer ' + state.auth.token
@@ -203,6 +249,16 @@ const Chat: React.FC<Props> = (props: Props) => {
                                         </MenuItem>
                                     })
                                 }
+                                <Button onClick={() => getFriends()}>gaemrtg</Button>
+                                <Divider mt={8} mb={8} />
+                                {
+                                    groups.map((group) => {
+                                        return <MenuItem data-testid="group" p={6} mb={4} ml={4} width="90%" borderRadius={8} bg="#0077B6" _focus={{ background: "#CAF0F8" }}  onClick={() => {connectToChat(group.id); setConnectedFriend(group.group_name)}}>
+                                            <Avatar mr={8} name={group.group_name} src="" />
+                                            <Text fontSize='2xl'>{group.group_name}</Text>
+                                        </MenuItem>
+                                    })
+                                }
                             </ScrollableFeed>
                             <Center>
                                 
@@ -229,7 +285,7 @@ const Chat: React.FC<Props> = (props: Props) => {
                             <Spacer />
                             <Popover>
                                 <PopoverTrigger>
-                                    <Button mr={8} data-testid="makegrouptoggle">Make group</Button>
+                                    <Button mr={8} data-testid="makegrouptoggle">Add to group</Button>
                                 </PopoverTrigger>
                                 <Portal>
                                     <PopoverContent>
@@ -241,7 +297,7 @@ const Chat: React.FC<Props> = (props: Props) => {
                                                 <ScrollableFeed>
                                                     {
                                                         friends.map((user) => {
-                                                            return <MenuItem data-testid="friend" mb={4} ml={4} width="90%" borderRadius={8} bg="#0077B6" _focus={{ background: "#CAF0F8" }}  onClick={() => {connectToChat(user.id); setConnectedFriend(user.username)}}>
+                                                            return <MenuItem data-testid="friend" mb={4} ml={4} width="90%" borderRadius={8} bg="#0077B6" _focus={{ background: "#CAF0F8" }}  onClick={() => {makeGroup(user)}}>
                                                                 <Avatar mr={8} name={user.username} src="" />
                                                                 <Text fontSize='2xl'>{user.username}</Text>
                                                             </MenuItem>

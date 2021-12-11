@@ -29,12 +29,15 @@ const App: React.FC = () => {
     
     const refreshToken = {
       token: response.data.token,
-      user: response.data.user
+      user: response.data.user,
+      id: response.data.id,
+      email: response.data.email
     }
 
     if (response.data.success = "true") {
       dispatch(loginUser(refreshToken));
       setIsLoggedIn(true);
+      console.log(refreshToken);
     }
 
     if (response.data.user == null || response.data.user == undefined) {
