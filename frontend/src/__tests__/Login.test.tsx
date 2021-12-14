@@ -1,8 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { register } from "../serviceWorker";
 import Login, {Props} from "../pages/Login";
-import { on } from "events";
+import Index, { Context } from '../store/Index';
 
 function renderLoginForm (props: Partial<Props> = {}) {
   const defaultProps = {
@@ -17,7 +16,7 @@ function renderLoginForm (props: Partial<Props> = {}) {
     }
   };
 
-  return render(<Login {...defaultProps} {...props} />)
+  return render(<Index><Login {...defaultProps} {...props} /></Index>)
 }
 
 test("Login contains correct form with empty values", async () => {
@@ -30,7 +29,7 @@ test("Login contains correct form with empty values", async () => {
 test("Can insert email", async () => {
   const onEmailChange = jest.fn();
   
-  const {findByTestId, debug} = renderLoginForm({ onEmailChange })
+  const {findByTestId} = renderLoginForm({ onEmailChange })
   const email = await findByTestId("email");
 
 

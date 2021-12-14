@@ -5,7 +5,6 @@ import axios from "axios";
 import { Flex, Box, Heading, Spacer, HStack, VStack} from "@chakra-ui/layout";
 import {chakra, Input, WrapItem, Avatar, Button, Text, Divider, Menu, Checkbox, MenuItem, Center, Popover, PopoverArrow, PopoverTrigger, PopoverContent
 , PopoverBody, PopoverHeader, PopoverFooter, Portal, PopoverCloseButton} from "@chakra-ui/react";
-import MessageBox from "../components/Message";
 import MessageFeed from "../components/MessageFeed";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store/Index";
@@ -18,7 +17,6 @@ export interface Props {
   onAddFriendChange: (friendId: string) => void;
   onMessageSubmit: (message: string) => void;
   onAddFriendToggle: (state: boolean) => void;
-  onAddFriendSubmit: (friendId: string | undefined) => void;
   onGetFriends: () => void;
 }
 
@@ -112,14 +110,11 @@ const Chat: React.FC<Props> = (props: Props) => {
     }
 
     const makeGroup = async(users: number[]) => {
-        console.log(users);
         const groupResponse = await axios.post("http://localhost:3001/group/create", {user_ids: users}, {
             headers: {
                Authorization: 'Bearer ' + state.auth.token 
             }
         });
-
-        console.log(groupResponse.data);
 
     }
 
@@ -129,34 +124,28 @@ const Chat: React.FC<Props> = (props: Props) => {
                Authorization: 'Bearer ' + state.auth.token 
             }
         });
-        console.log(response.data);
-        console.log(groupRooms);
         if (response.data != undefined) {
 
             const groups = response.data.rooms.map((group) => group);
-            console.log(groups);
             setGroups(groups);
         }
     }, [])
 
     const getFriends = useCallback(async () => {
         props.onGetFriends();
-        console.log(state.auth.token);
        const response = await axios.get<FriendsResponse>('http://localhost:3001/friend/me', {headers: {
             Authorization: 'Bearer ' + state.auth.token
         }})
-        console.log(response.data);
-        const users = response.data.friends.map((friend) => friend.user);
-        console.log(users);
-        console.log(response.data);
-        setFriends(users);
+        if (response.data != null && response.data != undefined) {
+            const users = response.data.friends.map((friend) => friend.user);
+            setFriends(users);
+        }
     }, [])
 
     useEffect(() => {
         getGroups();
         getFriends();
-        console.log(state.auth.token);
-    }, [getFriends])
+    }, [getFriends, state.auth.token])
 
     const socket = io("http://localhost:3001", {auth: {
         token: 'Bearer ' + state.auth.token
@@ -165,20 +154,16 @@ const Chat: React.FC<Props> = (props: Props) => {
     socket.on("message", (message: string) => {
         const currentMessages: string[] = testMessages;
         currentMessages.push(message);
-        console.log(message);
         setTestMessages(currentMessages);
         if (testMessages != null) {
             setHasSent(true);
         }
         setHasSent(false);
-        console.log(testMessages);
     })
 
 
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
-
-        //props.onMessageSubmit(message);
 
         if (connectedToRoom) {
             socket.emit('message', room, message);
@@ -191,8 +176,6 @@ const Chat: React.FC<Props> = (props: Props) => {
         const roomResponse = await axios.post<Room>('http://localhost:3001/connect', {friend_id, room_type: 'private'}, {headers: {
             Authorization: 'Bearer ' + state.auth.token
         }})
-        console.log(roomResponse.data.name);
-        console.log(roomResponse.data.users[1].username);
         if (roomResponse.data.name != null) {
 
             setRoom(roomResponse.data);
@@ -212,8 +195,6 @@ const Chat: React.FC<Props> = (props: Props) => {
 
     const handleAddFriend = async (e: React.SyntheticEvent) => {
         e.preventDefault();
-
-        props.onAddFriendSubmit(friendId);
 
         const addFriendResponse = await axios.post('http://localhost:3001/friend/add', {
             friend_id: friendId
@@ -273,21 +254,23 @@ const Chat: React.FC<Props> = (props: Props) => {
                                         </MenuItem>
                                     })
                                 }
-                            </ScrollableFeed>
-                            <Center>
+
+                                <Center>
                                 
-                                {addFriendToggled ?
-                                    <Center>
-                                        <VStack mt={4}>
-                                            <Text fontSize="xl">Insert your friend's ID!</Text>
-                                            <Input data-testid="friendid" width='80%' placeholder='ID' bg='white' size="lg" onChange={(event) => setFriendId(event.currentTarget.value)} />
-                                            <Button data-testid="addfriendsubmit" onClick={handleAddFriend}>Add</Button>
-                                        </VStack>
-                                    </Center> :
-                                    <Button p={4} data-testid="addfriendtoggle" onClick={() => {setAddFriendToggled(true); props.onAddFriendToggle(true)}}>Add friend</Button>
-                                }
+                                    {addFriendToggled ?
+                                        <Center>
+                                            <VStack>
+                                                <Text fontSize="xl">Insert your friend's ID!</Text>
+                                                <Input data-testid="friendid" width='80%' placeholder='ID' bg='white' size="lg" onChange={(event) => setFriendId(event.currentTarget.value)} />
+                                                <Button data-testid="addfriendsubmit" onClick={handleAddFriend}>Add</Button>
+                                            </VStack>
+                                        </Center> :
+                                        <Button p={4} data-testid="addfriendtoggle" onClick={() => {setAddFriendToggled(true); props.onAddFriendToggle(true)}}>Add friend</Button>
+                                    }
                       
-                            </Center>
+                                </Center>
+                            </ScrollableFeed>
+                            
                         </Menu>
                         
                     </Box>

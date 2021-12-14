@@ -56,6 +56,8 @@ export const RefreshToken = async (req: Request, res: Response) => {
         res.send(response);
     }
 
+    console.log(token);
+
     const decoded = verify(token, process.env.REFRESH_SECRET) as User;
     //Kui ei kehti siis lase uuesti sisse logida/ 2ra saada midagi tagasi
     if (!decoded) {

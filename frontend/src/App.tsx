@@ -82,7 +82,7 @@ const App: React.FC = () => {
               path="/" 
               element={
                 <PrivateRoute isLoggedIn={isLoggedIn}>
-                  <Chat onAddFriendChange={empty} onMessageSubmit={empty} onAddFriendToggle={empty} onGetFriends={empty} onRenderingChat={empty} onAddFriendSubmit={empty}/>
+                  <Chat onAddFriendChange={empty} onMessageSubmit={empty} onAddFriendToggle={empty} onGetFriends={empty} onRenderingChat={empty} />
                 </PrivateRoute>} />
             <Route 
               path="/profile" 

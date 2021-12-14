@@ -1,20 +1,34 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import Index, { Context } from '../store/Index';
 import { register } from "../serviceWorker";
 import Navbar, {Props} from "../components/Navbar";
+import { useNavigate } from "react-router-dom"
 import { on } from "events";
 
+const mockedUsedNavigate = jest.fn();
+const mockedUsedHref = jest.fn();
+const mockedUsedLocation = jest.fn();
+const mockedUsedResolvedPath = jest.fn();
+
+
+jest.mock('react-router', () => ({
+   ...jest.requireActual('react-router-dom') as any,
+  useNavigate: () => mockedUsedNavigate,
+  useHref: () => mockedUsedHref,
+  useLocation: () => mockedUsedLocation,
+  useResolvedPath: () => mockedUsedResolvedPath
+}));
+
 function renderNavbar () {
-  return render(<Navbar />)
+  return render(<Index><Navbar /></Index>)
 }
 
-test("Check burgermenu toggle", async () => {
-  const { findByTestId } = renderNavbar();
-
-  const menuButton = await findByTestId("menutogglebutton");
-  fireEvent.click(menuButton);
-
-  const loggedInAs = screen.getByText("Logged in as:");
-
-  expect(menuButton).toBeCalled();
+describe("When rendered", () => {
+  it("Menu button should be in the right corner", () => {
+    renderNavbar(); 
+    expect(
+      screen.getByRole("button")
+    ).toBeInTheDocument();
+  });
 });
