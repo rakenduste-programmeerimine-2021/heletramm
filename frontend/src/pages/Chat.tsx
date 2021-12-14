@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect, useContext } from 'react';
 import {io} from 'socket.io-client';
 import axios from "axios";
 import { Flex, Box, Heading, Spacer, HStack, VStack} from "@chakra-ui/layout";
-import {List, Input, WrapItem, Avatar, Button, Text, Divider, Menu, MenuButton, MenuItem, Center, Popover, PopoverArrow, PopoverTrigger, PopoverContent
+import {chakra, Input, WrapItem, Avatar, Button, Text, Divider, Menu, Checkbox, MenuItem, Center, Popover, PopoverArrow, PopoverTrigger, PopoverContent
 , PopoverBody, PopoverHeader, PopoverFooter, Portal, PopoverCloseButton} from "@chakra-ui/react";
 import MessageBox from "../components/Message";
 import MessageFeed from "../components/MessageFeed";
@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { Context } from "../store/Index";
 import ScrollableFeed from "react-scrollable-feed";
 import { useToast } from "@chakra-ui/toast";
-import { setgroups } from "process";
+import { AiOutlinePlus } from "react-icons/ai";
 
 export interface Props {
   onRenderingChat: (state: boolean) => void;
@@ -21,6 +21,8 @@ export interface Props {
   onAddFriendSubmit: (friendId: string | undefined) => void;
   onGetFriends: () => void;
 }
+
+const PlusSign = chakra(AiOutlinePlus);
 
 const Chat: React.FC<Props> = (props: Props) => {
 
@@ -84,6 +86,7 @@ const Chat: React.FC<Props> = (props: Props) => {
     const [user, setUser] = useState<User>();
     const [friends, setFriends] = useState<User[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
+    const [checkList, setCheckList] = useState<number[]>([]);
     const [groupRooms, setGroupRooms] = useState<User[][]>([]);
     const [connectedToRoom, setConnectedToRoom] = useState<boolean>(false);
     const [room, setRoom] = useState<Room>();
@@ -108,20 +111,16 @@ const Chat: React.FC<Props> = (props: Props) => {
         setMessagesSet(true);
     }
 
-    const makeGroup = async(user: User) => {
-        const users = [];
-        users.push(user.id);
+    const makeGroup = async(users: number[]) => {
+        console.log(users);
         const groupResponse = await axios.post("http://localhost:3001/group/create", {user_ids: users}, {
             headers: {
                Authorization: 'Bearer ' + state.auth.token 
             }
         });
 
-        console.log(groupResponse);
+        console.log(groupResponse.data);
 
-        // kaasa on vaja saata ainult array user id'dest
-
-        // TEE KUIDAGI USERID SELECTABLE, ET SAAKS MITU ID'D KAASA SAATA
     }
 
     const getGroups = useCallback(async () => {
@@ -132,9 +131,12 @@ const Chat: React.FC<Props> = (props: Props) => {
         });
         console.log(response.data);
         console.log(groupRooms);
-        const groups = response.data.rooms.map((group) => group);
-        console.log(groups);
-        setGroups(groups);
+        if (response.data != undefined) {
+
+            const groups = response.data.rooms.map((group) => group);
+            console.log(groups);
+            setGroups(groups);
+        }
     }, [])
 
     const getFriends = useCallback(async () => {
@@ -154,7 +156,7 @@ const Chat: React.FC<Props> = (props: Props) => {
         getGroups();
         getFriends();
         console.log(state.auth.token);
-    }, [])
+    }, [getFriends])
 
     const socket = io("http://localhost:3001", {auth: {
         token: 'Bearer ' + state.auth.token
@@ -232,6 +234,19 @@ const Chat: React.FC<Props> = (props: Props) => {
 
     }
 
+    const handleCheckbox = async (checked: boolean, userid: number) => {
+
+        if (checked == true) {
+        setCheckList([...checkList, userid]);
+        } else {
+        const selectedUser = checkList.filter(a => {
+            if (a === userid) return false;
+            return true;
+        });
+        setCheckList([...selectedUser]);
+        }
+    }
+
     return (
         <div>
             <Flex width="full" height="100vh" alignItems="center" justifyContent="center" backgroundColor="#0077B6">
@@ -249,7 +264,6 @@ const Chat: React.FC<Props> = (props: Props) => {
                                         </MenuItem>
                                     })
                                 }
-                                <Button onClick={() => getFriends()}>gaemrtg</Button>
                                 <Divider mt={8} mb={8} />
                                 {
                                     groups.map((group) => {
@@ -278,26 +292,30 @@ const Chat: React.FC<Props> = (props: Props) => {
                         
                     </Box>
                     <Spacer />
-                    {connectedToRoom ? <Box w="70%" h="80%" bg="#ADE8F4" mr={8} borderRadius={8} borderColor="#48CAE4" borderWidth={4}>
+                    {connectedToRoom ? 
+                    <Box w="70%" h="80%" bg="#ADE8F4" mr={8} borderRadius={8} borderColor="#48CAE4" borderWidth={4}>
                         <HStack borderRadius="2px" alignItems="baseline" pt={4} paddingBottom={4} bg="blue.500" br={8}>
                             <Avatar ml={8} mr={8} name={connectedFriend} src="" />
                             <Heading>{connectedFriend}</Heading>
                             <Spacer />
-                            <Popover>
+                            <Popover placement="right">
                                 <PopoverTrigger>
-                                    <Button mr={8} data-testid="makegrouptoggle">Add to group</Button>
+                                    <Button mb={4} data-testid="makegrouptoggle">
+                                        Make group<PlusSign marginLeft={4}/>
+                                    </Button>
                                 </PopoverTrigger>
                                 <Portal>
                                     <PopoverContent>
                                         <PopoverArrow />
                                         <PopoverHeader>Click on friend to add to group!</PopoverHeader>
                                         <PopoverCloseButton />
-                                        <PopoverBody>
+                                        <PopoverBody mt={4}>
                                             <Menu>
                                                 <ScrollableFeed>
                                                     {
                                                         friends.map((user) => {
-                                                            return <MenuItem data-testid="friend" mb={4} ml={4} width="90%" borderRadius={8} bg="#0077B6" _focus={{ background: "#CAF0F8" }}  onClick={() => {makeGroup(user)}}>
+                                                            return <MenuItem data-testid="friend" mb={4} ml={4} width="90%" borderRadius={8} bg="#0077B6" _focus={{ background: "#CAF0F8" }}>
+                                                                <Checkbox mr={4} size='lg' colorScheme='green' value={user.id} onChange={(e) => handleCheckbox(e.currentTarget.checked, user.id)}></Checkbox>
                                                                 <Avatar mr={8} name={user.username} src="" />
                                                                 <Text fontSize='2xl'>{user.username}</Text>
                                                             </MenuItem>
@@ -307,7 +325,9 @@ const Chat: React.FC<Props> = (props: Props) => {
                                             </Menu>
                                            
                                         </PopoverBody>
-                                        <PopoverFooter>This is the footer</PopoverFooter>
+                                        <Center>
+                                            <Button mb={4} bg="#21D19F" onClick={() => makeGroup(checkList)}>Make group</Button>
+                                        </Center>
                                     </PopoverContent>
                                 </Portal>
                             </Popover>
@@ -324,7 +344,7 @@ const Chat: React.FC<Props> = (props: Props) => {
                     </Box> :
                      <Box w="70%" h="80%" bg="#0077B6" mr={8} borderRadius={8} borderColor="#48CAE4" borderWidth={4}>   
                             <Center h="80%">
-                                <Heading data-testid="welcomemessage">Click on one of your friends to chat with them!</Heading>
+                                <Heading data-testid="welcomemessage">Click on one of your friends or groups to chat with them!</Heading>
                             </Center>
                     </Box>
                     } 
@@ -336,13 +356,3 @@ const Chat: React.FC<Props> = (props: Props) => {
 }
 
 export default Chat;
-
-// <Box>
-//                                 <Center>
-//                                     <VStack mt={4}>
-//                                         <Text fontSize="xl">Insert your friend's ID!</Text>
-//                                         <Input data-testid="friendid" width='80%' placeholder='ID' bg='white' size="lg" onChange={(event) => setFriendId(event.currentTarget.value)} />
-//                                         <Button data-testid="addfriendsubmit" onClick={handleAddFriend}>Add</Button>
-//                                     </VStack>
-//                                 </Center>
-//                             </Box>

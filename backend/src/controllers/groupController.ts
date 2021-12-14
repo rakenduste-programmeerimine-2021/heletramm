@@ -39,7 +39,7 @@ export const MyGroups = async (req: Request, res: Response, next: NextFunction) 
     .where("room.type = :room_type AND room_users.userId = :user_id", {room_type: RoomType.GROUP, user_id: req.user.id}) 
     .getMany();
 
-    return res.status(200).json(rooms);
+    return res.status(200).json({rooms});
 }
 
 export const AddToGroup = async (req: Request, res: Response, next: NextFunction) => {

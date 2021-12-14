@@ -7,13 +7,16 @@ import {useNavigate} from "react-router-dom";
 import {RouteProps, Link} from 'react-router-dom';
 import { logoutUser } from "../store/actions";
 import { IoIosChatboxes, IoMdArrowRoundUp } from "react-icons/io"
+import { FaUser } from "react-icons/fa";
 import React from 'react';
-import {Context} from "../store/Index";
+import { Context } from "../store/Index";
+import { User } from "../pages/Profile";
 
 export interface Props {
   onMenuToggle: (isOpen: boolean) => void;
 }
 
+const Person = chakra(FaUser);
 const MenuIcon = chakra(HamburgerIcon);
 const CloseMenuIcon = chakra(IoMdArrowRoundUp);
 const ChatBox = chakra(IoIosChatboxes);
@@ -24,6 +27,7 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState();
+  const [loggedUser, setLoggedUser] = useState<User>();
 
   const navigate = useNavigate();
 
@@ -40,11 +44,12 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
   
   useEffect(() => {
 
-    console.log(state.auth.token);
-    console.log(state.auth.user);
-    console.log(state.auth.id);
-    console.log(state.auth);
-
+    axios.post('http://localhost:3001/me', {username: state.auth.user}, {headers: {
+        Authorization: 'Bearer ' + state.auth.token
+    }}).then((response) => {
+        console.log(response.data);
+        setLoggedUser(response.data);
+    })
 
     if (state.auth.user != undefined) {
       setLoggedIn(true);
@@ -58,8 +63,14 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
       <Flex as="nav" justify="space-between" wrap="wrap" right="1rem" align="center" backgroundColor="#0077B6">
           <Stack direction={{ base: "column", md: "row" }} width={{ base: "full", md: "auto" }} alignItems="center" flexGrow={1} ml={12} mr={12}>
             <Link to="/" >
-              <ChakraButton as="a" variant="ghost" aria-label="Home" my={5} w="100%">
+              <ChakraButton mr={4} as="a" variant="ghost" aria-label="Home" my={5} w="100%">
                 <ChatBox boxSize={8} /> 
+              </ChakraButton>
+            </Link>
+
+            <Link to="/profile" >
+              <ChakraButton as="a" variant="ghost" aria-label="Profile" my={5} w="100%">
+                <Person boxSize={8}/> 
               </ChakraButton>
             </Link>
 
@@ -71,13 +82,13 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
               </MenuButton>
               <MenuList borderColor="#48CAE4" borderWidth={4}>
                   <Center>  
-                    <Avatar mb={4} size="lg" name={username} src="" />
+                    <Avatar mb={4} size="lg" name={loggedUser?.username} src="" />
                   </Center>
                   <Center>
                     <Text>Logged in as:</Text>
                   </Center>
                   <Center>
-                    <Text mb={4} fontSize="xl">#{state.auth.id} {username}</Text>
+                    <Text mb={4} fontSize="xl">#{loggedUser?.id} {username}</Text>
                   </Center>
                   <Center>
                     <ChakraButton onClick={handleLogout}>Log out</ChakraButton>
@@ -94,31 +105,3 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
 
 export default Navbar;
 
-
-// <MenuButton isActive={menuOpen} bg="#0077B6" alignContent="center" onClick={() => setMenuOpen(!menuOpen)}>
-                //   <Menu boxSize={8} />
-                // </MenuButton> : 
-                    
-              // <span><Text mr={8}>Signed in as: {username}</Text>
-              // </span> :
-                
-                // <ChakraButton onClick={() => setMenuOpen(!menuOpen)}>
-                //   <CloseMenu boxSize={8} />
-                // </ChakraButton>
-                  
-                
-                // <Link to="/login" >
-                //   <ChakraButton as="a" variant="ghost" aria-label="Contact" my={5} w="100%">
-                //     Sign in
-                //   </ChakraButton>
-                // </Link>
-
-
-
-// : 
-
-
-            
-            // 
-            
-            // }

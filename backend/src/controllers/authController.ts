@@ -8,7 +8,7 @@ import {verify} from 'jsonwebtoken';
 interface RefreshTokenResponse {
     success: boolean,
     token?: string,
-    user?: string
+    user?: string,
 }
 
 export const GetUsers = async (req: Request, res: Response) => {
@@ -16,6 +16,24 @@ export const GetUsers = async (req: Request, res: Response) => {
     const userRepository = connection.getRepository(User);
     const users = await userRepository.find();
     res.json(users);
+}
+
+export const GetLoggedUser = async (req: Request, res: Response) => {
+
+    const {username} = req.body;
+
+    console.log(req.body);
+
+    const connection = getConnection();
+    const userRepository = connection.getRepository(User);
+    const user = await userRepository.findOne({
+        select: ['id', 'email', 'username', 'password'],
+        where: {username}
+    });
+
+    console.log(user);
+
+    res.json(user);
 }
 
 export const Logout = async (req: Request, res: Response) => {
@@ -52,7 +70,7 @@ export const RefreshToken = async (req: Request, res: Response) => {
     const response: RefreshTokenResponse = {
         success: true,
         token: sign(decoded, process.env.JWT_SECRET),
-        user: decoded.username
+        user: decoded.username,
     }
 
     res.send(response);

@@ -17,6 +17,7 @@ import Navbar from "./components/Navbar";
 import axios from "axios";
 import PrivateRoute from "./components/PrivateRoute";
 import ClipLoader from "react-spinners/ClipLoader";
+import Profile from "./pages/Profile";
 
 const App: React.FC = () => {
 
@@ -26,12 +27,12 @@ const App: React.FC = () => {
 
   const getRefreshToken = async () => {
     const response = await axios.get("http://localhost:3001/refresh_token", {withCredentials: true});
+
+    console.log(response.data);
     
     const refreshToken = {
       token: response.data.token,
-      user: response.data.user,
-      id: response.data.id,
-      email: response.data.email
+      user: response.data.user
     }
 
     if (response.data.success = "true") {
@@ -82,6 +83,12 @@ const App: React.FC = () => {
               element={
                 <PrivateRoute isLoggedIn={isLoggedIn}>
                   <Chat onAddFriendChange={empty} onMessageSubmit={empty} onAddFriendToggle={empty} onGetFriends={empty} onRenderingChat={empty} onAddFriendSubmit={empty}/>
+                </PrivateRoute>} />
+            <Route 
+              path="/profile" 
+              element={
+                <PrivateRoute isLoggedIn={isLoggedIn}>
+                  <Profile />
                 </PrivateRoute>} />
             <Route 
               path="/testchat" 
