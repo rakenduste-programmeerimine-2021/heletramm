@@ -17,6 +17,7 @@ import Navbar from "./components/Navbar";
 import axios from "axios";
 import PrivateRoute from "./components/PrivateRoute";
 import ClipLoader from "react-spinners/ClipLoader";
+import Profile from "./pages/Profile";
 
 const App: React.FC = () => {
 
@@ -26,6 +27,8 @@ const App: React.FC = () => {
 
   const getRefreshToken = async () => {
     const response = await axios.get("http://localhost:3001/refresh_token", {withCredentials: true});
+
+    console.log(response.data);
     
     const refreshToken = {
       token: response.data.token,
@@ -35,6 +38,7 @@ const App: React.FC = () => {
     if (response.data.success = "true") {
       dispatch(loginUser(refreshToken));
       setIsLoggedIn(true);
+      console.log(refreshToken);
     }
 
     if (response.data.user == null || response.data.user == undefined) {
@@ -50,7 +54,7 @@ const App: React.FC = () => {
   if (state.auth.token == null || state.auth.token == undefined) {
     return (
       <ChakraProvider theme={theme}>
-        <Flex w="full" minH="100vH" justifyContent='center' backgroundColor="#45B69C">   
+        <Flex w="full" minH="100vH" justifyContent='center' backgroundColor="#023E8A">   
           <Center>
             <ClipLoader size={120} />
           </Center>
@@ -78,7 +82,13 @@ const App: React.FC = () => {
               path="/" 
               element={
                 <PrivateRoute isLoggedIn={isLoggedIn}>
-                  <Chat onAddFriendChange={empty} onMessageSubmit={empty} onAddFriendToggle={empty} onGetFriends={empty} onRenderingChat={empty} onAddFriendSubmit={empty}/>
+                  <Chat onAddFriendChange={empty} onMessageSubmit={empty} onAddFriendToggle={empty} onGetFriends={empty} onRenderingChat={empty} />
+                </PrivateRoute>} />
+            <Route 
+              path="/profile" 
+              element={
+                <PrivateRoute isLoggedIn={isLoggedIn}>
+                  <Profile />
                 </PrivateRoute>} />
             <Route 
               path="/testchat" 

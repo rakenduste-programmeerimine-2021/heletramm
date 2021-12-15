@@ -10,7 +10,9 @@ interface storeProps {
 
 const initialAuth = {
     token: null,
-    user: null
+    user: null,
+    id: null,
+    email: null
 }
 
 const [combinedReducer, initialState] = combineReducers({

@@ -8,6 +8,7 @@ const router = express.Router();
 
 
 router.get('/users', authMiddleware, authController.GetUsers);
+router.post('/me', authMiddleware, authController.GetLoggedUser);
 router.post('/register', registerValidation, validationMiddleware,
 authController.Register);
 router.post('/login', loginValidation, authController.Login);

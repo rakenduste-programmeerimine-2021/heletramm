@@ -8,7 +8,7 @@ import {verify} from 'jsonwebtoken';
 interface RefreshTokenResponse {
     success: boolean,
     token?: string,
-    user?: string
+    user?: string,
 }
 
 export const GetUsers = async (req: Request, res: Response) => {
@@ -18,10 +18,17 @@ export const GetUsers = async (req: Request, res: Response) => {
     res.json(users);
 }
 
+export const GetLoggedUser = async (req: Request, res: Response) => {
+
+    const connection = getConnection();
+    const userRepository = connection.getRepository(User);
+    const user = await userRepository.findOne({id: req.user.id});
+
+    res.json(user);
+}
+
 export const Logout = async (req: Request, res: Response) => {
     res.clearCookie("jid", { domain: "localhost", path: "/"});
-    //res.redirect("/login");
-    //res.cookie('jid', {}, {httpOnly: true});
     res.status(200).send("Logged out").end();
 }
 
@@ -52,7 +59,7 @@ export const RefreshToken = async (req: Request, res: Response) => {
     const response: RefreshTokenResponse = {
         success: true,
         token: sign(decoded, process.env.JWT_SECRET),
-        user: decoded.username
+        user: decoded.username,
     }
 
     res.send(response);

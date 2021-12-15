@@ -12,6 +12,8 @@ const UserAlt = chakra(FaMailBulk);
 const Lock = chakra(FaLock);
 
 interface User {
+    id: number,
+    email: string,
     token: string,
     user: string
 }
@@ -30,14 +32,12 @@ const Login: React.FC<Props> = (props: Props) => {
     const [password, setPassword] = useState("");
     const [token, setToken] = useState("");
     const [nickname, setNickname] = useState("");
+    const [id, setId] = useState<number>();
     const [loggedIn, setLoggedIn] = useState(false);
     const [error, setError] = useState<string>("");
-    //const [state, dispatch] = useContext(Context);
+    const [state, dispatch] = useContext(Context);
 
-    useEffect(() => {
-       
-    }, [])
-
+  
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
 
@@ -48,15 +48,15 @@ const Login: React.FC<Props> = (props: Props) => {
             password: password
         }, {withCredentials: true}).then((response) => {
 
-            console.log(response.status);
-
             if (response.data.token != undefined && response.data.token != null) {
+                setId(response.data.user.id);
+                setEmail(response.data.user.email);
                 setToken(response.data.token);
-                setNickname(response.data.username);
+                setNickname(response.data.user.username);
                 if (!response.data.token) return;
             }
 
-            window.location.reload(false);
+           // window.location.reload(false);
         }).catch((error) => {
             console.log(error.response.status);
 
@@ -65,18 +65,19 @@ const Login: React.FC<Props> = (props: Props) => {
             }
         })
 
-        
-        
         const user: User = {
+            id: id!,
+            email: email,
             token: token,
             user: nickname
         }
 
-        if (user.token != null && user.user != null) {
+        if (user.token != null && user.user != null && user.email != null && user.id != null) {
             setLoggedIn(true);
+            console.log(user);
         }
         
-        //await dispatch(loginUser(user));
+        await dispatch(loginUser(user));
 
         //navigate("/");
         
