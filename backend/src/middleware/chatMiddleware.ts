@@ -15,7 +15,7 @@ const InitGroupChat = async (req: Request, res: Response, next: NextFunction) =>
     const room = await roomRepository.findOne({relations: ['users'], where: {id: room_id, type: RoomType.GROUP}});
 
     const userIds = room.users.map((user) => user.id);
-    if (!userIds.includes(req.user.id)) next(new NotAuthorizedError());
+    if (!userIds.includes(req.user.id)) return next(new NotAuthorizedError());
 
     req.room = room;
     next();
