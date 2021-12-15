@@ -20,8 +20,15 @@ testAccount3.username = "testuser3";
 testAccount3.email = "testuser3@test.ee";
 testAccount3.password = "test1234!";
 
+const testAccount4 = new User();
+testAccount4.username = "testuser3";
+testAccount4.email = "testuser3@test.ee";
+testAccount4.password = "test1234!";
+
 let accessToken = "";
 let group_connect_id = 0;
+
+let test_user_group_id = 0;
 
 let connection: Connection;
 let userRepository: Repository<User>;
@@ -202,6 +209,20 @@ describe("Friends", () => {
         expect(response).to.be.status(200);
         expect(response.body).to.not.be.undefined;
         expect(response.body).to.haveOwnProperty('group_name');
+        expect(response.body).to.haveOwnProperty('id')
+        test_user_group_id = response.body.id;
     })
 
+    it('Adding people to group chat', async () => {
+        const response = await chai.request('http://localhost:3002')
+        .put('/group/add')
+        .auth(accessToken, {type: 'bearer'})
+        .send({
+            room_id: test_user_group_id,
+            user_ids: [testAccount4.id]
+        })
+
+        expect(response).to.have.status(200)
+        expect(response.body).to.have.property('message', "User added to group")
+    })
 })
