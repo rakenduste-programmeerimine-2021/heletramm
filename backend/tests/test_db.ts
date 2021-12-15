@@ -183,9 +183,9 @@ describe("Friends", () => {
         .send();
 
         expect(response).to.be.status(200);
-        expect(response.body).to.be.length.gte(0);
+        expect(response.body.rooms).to.be.length.gte(0);
 
-        const groups = response.body as Room[];
+        const groups = response.body.rooms as Room[];
         group_connect_id = groups[0].id;
 
     })

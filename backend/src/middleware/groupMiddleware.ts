@@ -13,7 +13,7 @@ export const PrepareUsers = async (req: Request, res: Response, next: NextFuncti
 
     const users: User[] = await Promise.all(user_ids.map(async (user_id: number) => {
         const user = await userRepository.findOne({id: user_id});
-        if (!user) next(new NoUsersFound());
+        if (!user) return next(new NoUsersFound());
         return user;
     }));
 
