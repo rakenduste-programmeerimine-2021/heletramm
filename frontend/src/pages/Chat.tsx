@@ -22,30 +22,41 @@ export interface Props {
 
 const PlusSign = chakra(AiOutlinePlus);
 
+export interface User {
+    id: number,
+    username: string,
+    email: string,
+    password: string
+}
+
+interface Friend {
+    id: number,
+    user: User
+}
+
+interface Error {
+    type: string,
+    msg: string
+}
+
+interface FriendsResponse {
+    id: number,
+    friends: Friend[], 
+    errors: Error[]
+}
+
+export async function _getFriends(token: string) {
+
+    const response = await axios.get<FriendsResponse>('http://localhost:3001/friend/me', {headers: {
+        Authorization: 'Bearer ' + token
+    }})
+
+    const users = response.data.friends.map((friend) => friend.user);
+
+    return users;
+}
+
 const Chat: React.FC<Props> = (props: Props) => {
-
-    interface Error {
-        type: string,
-        msg: string
-    }
-
-    interface User {
-        id: number,
-        username: string,
-        email: string,
-        password: string
-    }
-
-    interface Friend {
-        id: number,
-        user: User
-    }
-
-    interface FriendsResponse {
-        id: number,
-        friends: Friend[], 
-        errors: Error[]
-    }
 
     interface GroupsResponse {
         rooms: Group[]
@@ -143,7 +154,7 @@ const Chat: React.FC<Props> = (props: Props) => {
     }, [])
 
     useEffect(() => {
-        getGroups();
+        //getGroups();
         getFriends();
     }, [getFriends, state.auth.token])
 

@@ -37,10 +37,7 @@ const Login: React.FC<Props> = (props: Props) => {
     const [error, setError] = useState<string>("");
     const [state, dispatch] = useContext(Context);
 
-    useEffect(() => {
-       
-    }, [])
-
+  
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
 
@@ -51,18 +48,15 @@ const Login: React.FC<Props> = (props: Props) => {
             password: password
         }, {withCredentials: true}).then((response) => {
 
-            console.log(response.data);
-
             if (response.data.token != undefined && response.data.token != null) {
                 setId(response.data.user.id);
-                console.log(response.data.user.email);
                 setEmail(response.data.user.email);
                 setToken(response.data.token);
                 setNickname(response.data.user.username);
                 if (!response.data.token) return;
             }
 
-            //window.location.reload(false);
+           // window.location.reload(false);
         }).catch((error) => {
             console.log(error.response.status);
 

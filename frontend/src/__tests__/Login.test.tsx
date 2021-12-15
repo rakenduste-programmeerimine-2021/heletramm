@@ -3,6 +3,20 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Login, {Props} from "../pages/Login";
 import Index, { Context } from '../store/Index';
 
+// const mockedUsedNavigate = jest.fn();
+// const mockedUsedHref = jest.fn();
+// const mockedUsedLocation = jest.fn();
+// const mockedUsedResolvedPath = jest.fn();
+
+
+// jest.mock('react-router', () => ({
+//    ...jest.requireActual('react-router-dom') as any,
+//   useNavigate: () => mockedUsedNavigate,
+//   useHref: () => mockedUsedHref,
+//   useLocation: () => mockedUsedLocation,
+//   useResolvedPath: () => mockedUsedResolvedPath
+// }));
+
 function renderLoginForm (props: Partial<Props> = {}) {
   const defaultProps = {
     onEmailChange() {

@@ -20,26 +20,15 @@ export const GetUsers = async (req: Request, res: Response) => {
 
 export const GetLoggedUser = async (req: Request, res: Response) => {
 
-    const {username} = req.body;
-
-    console.log(req.body);
-
     const connection = getConnection();
     const userRepository = connection.getRepository(User);
-    const user = await userRepository.findOne({
-        select: ['id', 'email', 'username', 'password'],
-        where: {username}
-    });
-
-    console.log(user);
+    const user = await userRepository.findOne({id: req.user.id});
 
     res.json(user);
 }
 
 export const Logout = async (req: Request, res: Response) => {
     res.clearCookie("jid", { domain: "localhost", path: "/"});
-    //res.redirect("/login");
-    //res.cookie('jid', {}, {httpOnly: true});
     res.status(200).send("Logged out").end();
 }
 
@@ -55,8 +44,6 @@ export const RefreshToken = async (req: Request, res: Response) => {
         }
         res.send(response);
     }
-
-    console.log(token);
 
     const decoded = verify(token, process.env.REFRESH_SECRET) as User;
     //Kui ei kehti siis lase uuesti sisse logida/ 2ra saada midagi tagasi

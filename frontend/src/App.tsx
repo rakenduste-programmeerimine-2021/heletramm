@@ -54,7 +54,7 @@ const App: React.FC = () => {
   if (state.auth.token == null || state.auth.token == undefined) {
     return (
       <ChakraProvider theme={theme}>
-        <Flex w="full" minH="100vH" justifyContent='center' backgroundColor="#45B69C">   
+        <Flex w="full" minH="100vH" justifyContent='center' backgroundColor="#023E8A">   
           <Center>
             <ClipLoader size={120} />
           </Center>

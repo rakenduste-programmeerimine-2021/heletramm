@@ -28,7 +28,7 @@ const Register: React.FC<Props> = (props: Props) => {
 
     const toast = useToast();
 
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
@@ -43,7 +43,7 @@ const Register: React.FC<Props> = (props: Props) => {
             const resp = response.data;
             console.log(JSON.stringify(resp));
             if (response.data != undefined) {
-                //navigate("/login");
+                navigate("/login");
                 toast({
                     title: 'Success!',
                     description: "Account created successfully!",

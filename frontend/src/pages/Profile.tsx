@@ -18,12 +18,12 @@ const Profile: React.FC = () => {
 
     useEffect(() => {
         console.log(state.auth);
-        axios.post('http://localhost:3001/me', {username: state.auth.user}, {headers: {
-            Authorization: 'Bearer ' + state.auth.token
-        }}).then((response) => {
-            console.log(response.data);
-            setLoggedUser(response.data);
-        })
+        // axios.post('http://localhost:3001/me', {username: state.auth.user}, {headers: {
+        //     Authorization: 'Bearer ' + state.auth.token
+        // }}).then((response) => {
+        //     console.log(response.data);
+        //     setLoggedUser(response.data);
+        // })
       
     }, [])
 
