@@ -1,8 +1,8 @@
 import React from "react";
 import { render, screen, fireEvent, getByText } from "@testing-library/react";
 import { register } from "../serviceWorker";
-import Chat, {Props, _getFriends, User} from "../pages/Chat";
-import Index, { Context } from '../store/Index';
+import Chat, {Props, User} from "../pages/Chat";
+import Index, { Context } from '../store';
 import axios from "axios";
 
 export function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {

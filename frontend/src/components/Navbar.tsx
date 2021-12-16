@@ -9,7 +9,7 @@ import { logoutUser } from "../store/actions";
 import { IoIosChatboxes, IoMdArrowRoundUp } from "react-icons/io"
 import { FaUser } from "react-icons/fa";
 import React from 'react';
-import { Context } from "../store/Index";
+import { Context } from "../store";
 import { User } from "../pages/Profile";
 
 export interface Props {
@@ -33,16 +33,16 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
 
   const handleLogout = async () => {
     console.log(state.auth.token);
-    const response = await axios.get("http://localhost:3001/logout", {withCredentials: true});
+    const response = await axios.get(`http://${process.env.REACT_APP_SERVER_URL}:3001/logout`, {withCredentials: true});
     console.log(JSON.stringify(response.data));
     dispatch(logoutUser());
     setLoggedIn(false);
     navigate("/login");
-    window.location.reload(false);
+    window.location.reload();
   }
 
   const getUser = useCallback(async () => {
-    axios.post('http://localhost:3001/me', {username: state.auth.user}, {headers: {
+    axios.post(`http://${process.env.REACT_APP_SERVER_URL}:3001/me`, {username: state.auth.user}, {headers: {
         Authorization: 'Bearer ' + state.auth.token
     }}).then((response) => {
         console.log(response.data);

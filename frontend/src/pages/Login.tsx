@@ -1,5 +1,5 @@
 import React, {useState, useContext, useEffect} from 'react';
-import { Context } from '../store/Index';
+import { Context } from '../store';
 import { FormControl, FormLabel, FormHelperText} from '@chakra-ui/form-control';
 import {Flex, Box, Heading, Button, Link, Divider, chakra, Text, Center} from "@chakra-ui/react";
 import { FaLock, FaMailBulk } from 'react-icons/fa';
@@ -45,7 +45,7 @@ const Login: React.FC<Props> = (props: Props) => {
 
         props.onSubmit(email, password);
 
-        axios.post("http://localhost:3001/login", {
+        axios.post(`http://${process.env.REACT_APP_SERVER_URL}:3001/login`, {
             email: email,
             password: password
         }, {withCredentials: true}).then((response) => {
@@ -57,7 +57,7 @@ const Login: React.FC<Props> = (props: Props) => {
                 setToken(response.data.token);
                 setNickname(response.data.user.username);
                 if (!response.data.token) return;
-                window.location.reload(false);
+                window.location.reload();
             }
 
         }).catch((err) => {

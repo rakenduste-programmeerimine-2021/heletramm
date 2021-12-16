@@ -6,7 +6,7 @@ import { Flex, Box, Heading, Spacer, HStack, VStack} from "@chakra-ui/layout";
 import {chakra, Input, Avatar, Button, Text, Divider, Menu, Checkbox, MenuItem, Center, Popover, PopoverArrow, PopoverTrigger, PopoverContent
 , PopoverBody, PopoverHeader, Portal, PopoverCloseButton} from "@chakra-ui/react";
 import MessageFeed from "../components/MessageFeed";
-import { Context } from "../store/Index";
+import { Context } from "../store";
 import ScrollableFeed from "react-scrollable-feed";
 import { useToast } from "@chakra-ui/toast";
 import { AiOutlinePlus } from "react-icons/ai";
@@ -91,7 +91,7 @@ const Chat: React.FC<Props> = (props: Props) => {
     const toast = useToast();
 
     const getChatHistory = async (room_id: number) => {
-        const chatHistoryResponse = await axios.post<ChatHistoryResponse>("http://localhost:3001/history", {room_id: room_id}, {
+        const chatHistoryResponse = await axios.post<ChatHistoryResponse>(`http://${process.env.REACT_APP_SERVER_URL}:3001/history`, {room_id: room_id}, {
             headers: {
                Authorization: 'Bearer ' + state.auth.token 
             }
@@ -105,18 +105,18 @@ const Chat: React.FC<Props> = (props: Props) => {
     }
 
     const makeGroup = async(users: number[]) => {
-        const groupResponse = await axios.post("http://localhost:3001/group/create", {user_ids: users}, {
+        const groupResponse = await axios.post(`http://${process.env.REACT_APP_SERVER_URL}:3001/group/create`, {user_ids: users}, {
             headers: {
                Authorization: 'Bearer ' + state.auth.token 
             }
         });
 
-        window.location.reload(false);
+        window.location.reload();
 
     }
 
     const getGroups = useCallback(async () => {
-        const response = await axios.post<GroupsResponse>("http://localhost:3001/group/me", {}, {
+        const response = await axios.post<GroupsResponse>(`http://${process.env.REACT_APP_SERVER_URL}:3001/group/me`, {}, {
             headers: {
                Authorization: 'Bearer ' + state.auth.token,'Content-Type': 'application/json'
             }
@@ -128,7 +128,7 @@ const Chat: React.FC<Props> = (props: Props) => {
     }, [])
     
     const getFriends = useCallback(async () => {
-        const response = await axios.post<FriendsResponse>('http://localhost:3001/friend/me', {}, {
+        const response = await axios.post<FriendsResponse>(`http://${process.env.REACT_APP_SERVER_URL}:3001/friend/me`, {}, {
             headers: {
                 Authorization: 'Bearer ' + state.auth.token,
                 'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ const Chat: React.FC<Props> = (props: Props) => {
         })
     }, [chatErrors])
     
-    const socket = io("http://localhost:3001", {auth: {
+    const socket = io(`http://${process.env.REACT_APP_SERVER_URL}:3001`, {auth: {
         token: 'Bearer ' + state.auth.token
     }});
 
@@ -184,7 +184,7 @@ const Chat: React.FC<Props> = (props: Props) => {
     }
 
     const connectToChat = async (friend_id: number) => {
-        const roomResponse = await axios.post<Room>('http://localhost:3001/connect', {friend_id, room_type: 'private'}, {headers: {
+        const roomResponse = await axios.post<Room>(`http://${process.env.REACT_APP_SERVER_URL}:3001/connect`, {friend_id, room_type: 'private'}, {headers: {
             Authorization: 'Bearer ' + state.auth.token
         }})
         console.log(roomResponse.data);
@@ -206,7 +206,7 @@ const Chat: React.FC<Props> = (props: Props) => {
     }
 
     const connectoToGroupChat = async (room_id: number) => {
-        const roomResponse = await axios.post<Room>('http://localhost:3001/connect', {room_id, room_type: 'group'}, {headers: {
+        const roomResponse = await axios.post<Room>(`http://${process.env.REACT_APP_SERVER_URL}:3001/connect`, {room_id, room_type: 'group'}, {headers: {
             Authorization: 'Bearer ' + state.auth.token
         }})
         console.log(roomResponse.data);
@@ -230,7 +230,7 @@ const Chat: React.FC<Props> = (props: Props) => {
     const handleAddFriend = async (e: React.SyntheticEvent) => {
         e.preventDefault();
 
-            axios.post('http://localhost:3001/friend/add', {
+            axios.post(`http://${process.env.REACT_APP_SERVER_URL}:3001/friend/add`, {
                 friend_id: friendId
             }, {headers: {
                 Authorization: 'Bearer ' + state.auth.token

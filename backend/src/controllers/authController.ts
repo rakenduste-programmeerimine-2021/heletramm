@@ -29,7 +29,7 @@ export const GetLoggedUser = async (req: Request, res: Response) => {
 }
 
 export const Logout = async (req: Request, res: Response) => {
-    res.clearCookie("jid", { domain: "localhost", path: "/"});
+    res.clearCookie("jid", { domain: `${process.env.SERVER_URL}`, path: "/"});
     res.status(200).send("Logged out").end();
 }
 

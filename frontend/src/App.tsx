@@ -6,7 +6,7 @@ import {
   Center
 } from "@chakra-ui/react"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import {Context} from "./store/Index"
+import {Context} from "./store"
 import {loginUser} from "../src/store/actions";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -24,7 +24,7 @@ const App: React.FC = () => {
   const [showNavbar, setShowNavbar] = useState(true);
 
   const getRefreshToken = async () => {
-    const response = await axios.get("http://localhost:3001/refresh_token", {withCredentials: true});
+    const response = await axios.get(`http://${process.env.REACT_APP_SERVER_URL}:3001/refresh_token`, {withCredentials: true});
 
     const refreshToken = {
       token: response.data.token,

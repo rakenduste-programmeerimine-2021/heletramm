@@ -25,7 +25,7 @@ const startServer = async () => {
 
     const io = new Server(app, {
         cors: {
-            origin: "http://localhost:3000",
+            origin: `http://${process.env.SERVER_URL}:3000`,
             methods: ["GET", "POST"],
             credentials: true
 

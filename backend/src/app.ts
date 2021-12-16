@@ -11,7 +11,7 @@ import { FriendErrorHandler } from './error_handling/friendErrors';
 dotenv.config();
 
 const corsOptions={
-    origin: "http://localhost:3000",
+    origin: `http://${process.env.SERVER_URL}:3000`,
     credentials: true,
     optionSuccessStatus: 200
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Login, {Props} from "../pages/Login";
-import Index, { Context } from '../store/Index';
+import Index, { Context } from '../store';
 
 const mockedUsedNavigate = jest.fn();
 const mockedUsedHref = jest.fn();

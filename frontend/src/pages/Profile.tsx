@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState, useCallback } from "react";
 import { Flex, Box, Center, Avatar, Heading, Text, Spacer, HStack } from "@chakra-ui/react";
 import axios from "axios";
-import { Context } from "../store/Index";
+import { Context } from "../store";
 
 export interface User {
     id: string,
@@ -16,7 +16,7 @@ const Profile: React.FC = () => {
     const [loggedUser, setLoggedUser] = useState<User>();
 
     const getUser = useCallback(async () => {
-        axios.post('http://localhost:3001/me', {username: state.auth.user}, {headers: {
+        axios.post(`http://${process.env.REACT_APP_SERVER_URL}:3001/me`, {username: state.auth.user}, {headers: {
             Authorization: 'Bearer ' + state.auth.token
         }}).then((response) => {
             console.log(response.data);

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import Index, { Context } from '../store/Index';
+import Index, { Context } from '../store';
 import Navbar, {Props} from "../components/Navbar";
 
 const mockedUsedNavigate = jest.fn();
