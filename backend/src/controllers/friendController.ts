@@ -15,12 +15,12 @@ export const AddFriend = async (req: Request, res: Response, next: NextFunction)
     const me = await userRepository.findOne({id: req.user.id});
     if (!me) throw Error("Me not found");
 
-    const friendExists = await friendRepository.findOne({friend_of: me});
-
-    if (friendExists) next(new AlreadyFriendError());
-
     const friendToAdd = await userRepository.findOne({id: friend_id});
     if (!friendToAdd) throw new Error('');
+
+
+    const friendExists = await friendRepository.findOne({friend_of: me, user: friendToAdd});
+    if (friendExists) return next(new AlreadyFriendError());
 
     const friendEntry = new Friend();
 
@@ -29,7 +29,7 @@ export const AddFriend = async (req: Request, res: Response, next: NextFunction)
 
     await friendRepository.save(friendEntry);
 
-    res.status(200).json({
+    return res.status(200).json({
         message: "Friend added successfully"
     })
 
