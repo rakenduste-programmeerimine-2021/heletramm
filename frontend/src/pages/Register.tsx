@@ -1,14 +1,13 @@
 import React, {useState} from 'react';
 import axios from 'axios';
 import { FormControl, FormLabel } from '@chakra-ui/form-control';
-import {Flex, Box, Heading, Button, Stack, Link, Divider, chakra} from '@chakra-ui/react';
+import {Flex, Box, Heading, Button, Stack, Link, Divider, chakra, Text, Center} from '@chakra-ui/react';
 import { FaLock, FaMailBulk, FaUser } from 'react-icons/fa';
-import { BsPerson } from "react-icons/bs";
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
 import { useNavigate } from 'react-router';
 import { useToast } from '@chakra-ui/toast';
+import { Error } from './Chat';
 
-const Person = chakra(BsPerson);
 const Lock = chakra(FaLock);
 const Mail = chakra(FaMailBulk);
 const User = chakra(FaUser);
@@ -25,6 +24,7 @@ const Register: React.FC<Props> = (props: Props) => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [regErrors, setRegErrors] = useState<Error[]>();
 
     const toast = useToast();
 
@@ -40,6 +40,7 @@ const Register: React.FC<Props> = (props: Props) => {
             email: email,
             password: password 
         }).then((response) => {
+            console.log(response.data.errors);
             const resp = response.data;
             console.log(JSON.stringify(resp));
             if (response.data != undefined) {
@@ -54,10 +55,10 @@ const Register: React.FC<Props> = (props: Props) => {
                 })
             }
         }, (error) => {
-            console.log(error);
+            const errors = error.response.data.errors.map((err: Error) => err.msg);
+            setRegErrors(errors);
+            console.log(regErrors);
         });
-        
-
     }
 
     return (
@@ -73,7 +74,7 @@ const Register: React.FC<Props> = (props: Props) => {
                             <InputGroup>
                                     <InputLeftElement
                                         pointerEvents="none"
-                                        children={<User color="gray.300" />}
+                                        children={<User color="black" />}
                                     />
                                     <Input data-testid="username" outlineColor="blackAlpha.800" type="text" onChange={e => {setUsername(e.currentTarget.value); props.onUsernameChange(e.currentTarget.value)}} />
                             </InputGroup>
@@ -83,7 +84,7 @@ const Register: React.FC<Props> = (props: Props) => {
                             <InputGroup>
                                 <InputLeftElement
                                     pointerEvents="none"
-                                    children={<Mail color="gray.300" />}
+                                    children={<Mail color="black" />}
                                 />
                                 <Input data-testid="email" outlineColor="blackAlpha.800" type="email" onChange={e => {setEmail(e.currentTarget.value); props.onEmailChange(e.currentTarget.value)}} />
                             </InputGroup>
@@ -93,12 +94,21 @@ const Register: React.FC<Props> = (props: Props) => {
                             <InputGroup>
                                 <InputLeftElement
                                     pointerEvents="none"
-                                    children={<Lock color="gray.300" />}
+                                    children={<Lock color="black" />}
                                 />
                                 <Input data-testid="password" outlineColor="blackAlpha.800" type="password" onChange={e => {setPassword(e.currentTarget.value); props.onPasswordChange(e.currentTarget.value)}} />
                             </InputGroup>
                         </FormControl>
                         <Divider borderColor="#023E8A" />
+                        {
+                            regErrors?.map((error) => {
+                                return (
+                                    <Center mt={4}>
+                                        <Text color="red.500" fontSize={16}>{error}</Text>
+                                    </Center>
+                                )
+                            })
+                        }
                         <Stack align="center">
                             <Button data-testid="submit" width="80%" mt={8} type="submit" bgColor="#0096C7">
                                 Register

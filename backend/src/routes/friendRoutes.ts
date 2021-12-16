@@ -6,7 +6,7 @@ import validationMiddleware, { friendAddValidation } from '../middleware/validat
 const router = express.Router();
 
 router.post('/add', [authMiddleware, ...friendAddValidation, validationMiddleware], friendController.AddFriend);
-router.get('/me', authMiddleware, friendController.MyFriends);
+router.post('/me', authMiddleware, friendController.MyFriends);
 router.get('/find', authMiddleware, friendController.Find);
 
 export default router;

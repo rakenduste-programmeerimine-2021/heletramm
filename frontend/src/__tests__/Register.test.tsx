@@ -7,7 +7,6 @@ const mockedUsedHref = jest.fn();
 const mockedUsedLocation = jest.fn();
 const mockedUsedResolvedPath = jest.fn();
 
-
 jest.mock('react-router', () => ({
    ...jest.requireActual('react-router-dom') as any,
   useNavigate: () => mockedUsedNavigate,

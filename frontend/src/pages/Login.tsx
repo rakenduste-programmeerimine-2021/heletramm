@@ -1,12 +1,14 @@
 import React, {useState, useContext, useEffect} from 'react';
 import { Context } from '../store/Index';
 import { FormControl, FormLabel, FormHelperText} from '@chakra-ui/form-control';
-import {Flex, Box, Heading, Button, Link, Divider, chakra, Text} from "@chakra-ui/react";
+import {Flex, Box, Heading, Button, Link, Divider, chakra, Text, Center} from "@chakra-ui/react";
 import { FaLock, FaMailBulk } from 'react-icons/fa';
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
 import axios from "axios";
 import { loginUser } from '../store/actions';
 import { useNavigate } from "react-router-dom";
+import { Error } from './Chat';
+import { Navigate } from 'react-router';
 
 const UserAlt = chakra(FaMailBulk);
 const Lock = chakra(FaLock);
@@ -26,7 +28,7 @@ export interface Props {
 
 const Login: React.FC<Props> = (props: Props) => {
 
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -34,8 +36,8 @@ const Login: React.FC<Props> = (props: Props) => {
     const [nickname, setNickname] = useState("");
     const [id, setId] = useState<number>();
     const [loggedIn, setLoggedIn] = useState(false);
-    const [error, setError] = useState<string>("");
-    const [state, dispatch] = useContext(Context);
+    const [error, setError] = useState<Error>();
+    const [dispatch] = useContext(Context);
 
   
     const handleSubmit = async (e: React.SyntheticEvent) => {
@@ -49,20 +51,19 @@ const Login: React.FC<Props> = (props: Props) => {
         }, {withCredentials: true}).then((response) => {
 
             if (response.data.token != undefined && response.data.token != null) {
+                console.log(response.data.token);
                 setId(response.data.user.id);
                 setEmail(response.data.user.email);
                 setToken(response.data.token);
                 setNickname(response.data.user.username);
                 if (!response.data.token) return;
+                window.location.reload(false);
             }
 
-           // window.location.reload(false);
-        }).catch((error) => {
-            console.log(error.response.status);
-
-            if(error.response.status == 401) {
-                setError("Invalid credentials!");
-            }
+        }).catch((err) => {
+            const error = err.response.data.error;
+            console.log(error);
+            setError(error);
         })
 
         const user: User = {
@@ -74,16 +75,11 @@ const Login: React.FC<Props> = (props: Props) => {
 
         if (user.token != null && user.user != null && user.email != null && user.id != null) {
             setLoggedIn(true);
-            console.log(user);
+            dispatch(loginUser(user));
         }
-        
-        await dispatch(loginUser(user));
 
-        //navigate("/");
-        
+        <Navigate to="/chat" />
     }
-
-    
 
     return (
         <div>
@@ -99,7 +95,7 @@ const Login: React.FC<Props> = (props: Props) => {
                                 <InputGroup>
                                     <InputLeftElement
                                         pointerEvents="none"
-                                        children={<UserAlt color="gray.300" />}
+                                        children={<UserAlt color="black" />}
                                     />
                                     <Input data-testid="email" outlineColor="blackAlpha.800" type="email" id="email" onChange={e => {setEmail(e.currentTarget.value); props.onEmailChange(e.currentTarget.value)}} />
                                 </InputGroup>
@@ -110,7 +106,7 @@ const Login: React.FC<Props> = (props: Props) => {
                                 <InputGroup>
                                     <InputLeftElement
                                         pointerEvents="none"
-                                        children={<Lock color="gray.300" />}
+                                        children={<Lock color="black" />}
                                     />
                                     <Input data-testid="password" outlineColor="blackAlpha.800" type="password" id="password" onChange={e => {setPassword(e.currentTarget.value); props.onPasswordChange(e.currentTarget.value)}} />
                                 </InputGroup>
@@ -123,7 +119,9 @@ const Login: React.FC<Props> = (props: Props) => {
                     </Box>
                     <Divider borderColor="#023E8A" />
                     <Box mt={6} textAlign="center">
-                        <Text color="red">{error}</Text>
+                        <Center mt={4}>
+                            <Text color="red.500" fontSize={16}>{error}</Text>
+                        </Center>
                         <br />
                         Don't have an account yet?
                         <br />
@@ -138,13 +136,3 @@ const Login: React.FC<Props> = (props: Props) => {
 }
 
 export default Login;
-
-
-//Colors
-
-//  D8DDEF
-//  A0A4B8
-//  7293A0
-//  45B69C
-//  21D19F
-//  3A405A

@@ -1,4 +1,4 @@
-import {useState, useContext, useEffect} from 'react';
+import {useState, useContext, useEffect, useCallback} from 'react';
 import axios from "axios";
 import {Spacer, Flex, Text, Avatar, Stack, Center, Menu, MenuButton, MenuList, MenuItem} from '@chakra-ui/react';
 import {Button as ChakraButton, chakra} from "@chakra-ui/react";
@@ -41,15 +41,18 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
     window.location.reload(false);
   }
 
-  
-  useEffect(() => {
-
+  const getUser = useCallback(async () => {
     axios.post('http://localhost:3001/me', {username: state.auth.user}, {headers: {
         Authorization: 'Bearer ' + state.auth.token
     }}).then((response) => {
         console.log(response.data);
         setLoggedUser(response.data);
     })
+  }, [])
+  
+  useEffect(() => {
+
+    getUser();
 
     if (state.auth.user != undefined) {
       setLoggedIn(true);
@@ -104,4 +107,3 @@ const Navbar: React.FC<RouteProps> = (props: RouteProps) => {
 }
 
 export default Navbar;
-

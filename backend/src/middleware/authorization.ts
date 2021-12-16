@@ -8,6 +8,8 @@ import { User } from "../model/User";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
+
+        
         if (!req.headers.authorization) throw new NotLoggedError();
 
         const token = req.headers.authorization.split(" ")[1];

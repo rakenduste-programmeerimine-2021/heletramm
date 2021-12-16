@@ -18,9 +18,9 @@ export const AddFriend = async (req: Request, res: Response, next: NextFunction)
     const friendToAdd = await userRepository.findOne({id: friend_id});
     if (!friendToAdd) throw new Error('');
 
+
     const friendExists = await friendRepository.findOne({friend_of: me, user: friendToAdd});
     if (friendExists) return next(new AlreadyFriendError());
-
 
     const friendEntry = new Friend();
 

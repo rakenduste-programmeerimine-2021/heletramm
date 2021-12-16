@@ -7,11 +7,21 @@ function renderProfile() {
     render(<Index><Profile /></Index>);
 }
 
-describe("when rendered with a `name` prop", () => {
-  it("should paste it into the greetings text", () => {
+describe("Navbar", () => {
+  it("Checks if Username exists", () => {
     renderProfile(); 
     expect(
       screen.getByText("Username")
     ).toBeInTheDocument();
   });
+
+  it("Checks if E-mail exists", () => {
+    renderProfile();
+    expect(screen.getByText("E-mail")).toBeInTheDocument();
+  })
+
+  it("Checks if User ID exists", () => {
+    renderProfile();
+    expect(screen.getByText("User ID")).toBeInTheDocument();
+  })
 });

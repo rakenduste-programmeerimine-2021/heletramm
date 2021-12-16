@@ -3,10 +3,9 @@ import { useState, useCallback, useEffect, useContext } from 'react';
 import {io} from 'socket.io-client';
 import axios from "axios";
 import { Flex, Box, Heading, Spacer, HStack, VStack} from "@chakra-ui/layout";
-import {chakra, Input, WrapItem, Avatar, Button, Text, Divider, Menu, Checkbox, MenuItem, Center, Popover, PopoverArrow, PopoverTrigger, PopoverContent
-, PopoverBody, PopoverHeader, PopoverFooter, Portal, PopoverCloseButton} from "@chakra-ui/react";
+import {chakra, Input, Avatar, Button, Text, Divider, Menu, Checkbox, MenuItem, Center, Popover, PopoverArrow, PopoverTrigger, PopoverContent
+, PopoverBody, PopoverHeader, Portal, PopoverCloseButton} from "@chakra-ui/react";
 import MessageFeed from "../components/MessageFeed";
-import { useNavigate } from "react-router-dom";
 import { Context } from "../store/Index";
 import ScrollableFeed from "react-scrollable-feed";
 import { useToast } from "@chakra-ui/toast";
@@ -29,34 +28,23 @@ export interface User {
     password: string
 }
 
-interface Friend {
-    id: number,
-    user: User
-}
-
-interface Error {
+export interface Error {
     type: string,
     msg: string
 }
 
-interface FriendsResponse {
-    id: number,
-    friends: Friend[], 
-    errors: Error[]
-}
-
-export async function _getFriends(token: string) {
-
-    const response = await axios.get<FriendsResponse>('http://localhost:3001/friend/me', {headers: {
-        Authorization: 'Bearer ' + token
-    }})
-
-    const users = response.data.friends.map((friend) => friend.user);
-
-    return users;
-}
-
 const Chat: React.FC<Props> = (props: Props) => {
+
+    interface Friend {
+        id: number,
+        user: User
+    }
+
+    interface FriendsResponse {
+        id: number,
+        friends: Friend[], 
+        errors: Error[]
+    }
 
     interface GroupsResponse {
         rooms: Group[]
@@ -85,23 +73,19 @@ const Chat: React.FC<Props> = (props: Props) => {
         message: string
     }
 
-    //const navigate = useNavigate();
-
-    const [testMessages, setTestMessages] = useState<string[]>([]);
+    const [messages, setMessages] = useState<string[]>([]);
+    const [chatErrors, setChatErrors] = useState<Error[]>();
     const [hasSent, setHasSent] = useState<boolean>(false);
     const [messagesSet, setMessagesSet] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
     const [friendId, setFriendId] = useState<string>();
-    const [user, setUser] = useState<User>();
     const [friends, setFriends] = useState<User[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
     const [checkList, setCheckList] = useState<number[]>([]);
-    const [groupRooms, setGroupRooms] = useState<User[][]>([]);
     const [connectedToRoom, setConnectedToRoom] = useState<boolean>(false);
     const [room, setRoom] = useState<Room>();
     const [connectedFriend, setConnectedFriend] = useState<string>("");
     const [addFriendToggled, setAddFriendToggled] = useState<boolean>(false);
-    const [makeGroupToggled, setMakeGroupToggled] = useState<boolean>(false);
     const [state] = useContext(Context);
 
     const toast = useToast();
@@ -113,10 +97,10 @@ const Chat: React.FC<Props> = (props: Props) => {
             }
         });
 
-        testMessages.length = 0;
+        messages.length = 0;
         setMessagesSet(false);
 
-        chatHistoryResponse.data.messages.map((msg) => testMessages.push(msg.message));
+        chatHistoryResponse.data.messages.map((msg) => messages.push(msg.message));
         setMessagesSet(true);
     }
 
@@ -127,51 +111,67 @@ const Chat: React.FC<Props> = (props: Props) => {
             }
         });
 
+        window.location.reload(false);
+
     }
 
     const getGroups = useCallback(async () => {
-        const response = await axios.get<GroupsResponse>("http://localhost:3001/group/me", {
+        const response = await axios.post<GroupsResponse>("http://localhost:3001/group/me", {}, {
             headers: {
-               Authorization: 'Bearer ' + state.auth.token 
+               Authorization: 'Bearer ' + state.auth.token,'Content-Type': 'application/json'
             }
         });
         if (response.data != undefined) {
-
             const groups = response.data.rooms.map((group) => group);
             setGroups(groups);
         }
     }, [])
-
+    
     const getFriends = useCallback(async () => {
-        props.onGetFriends();
-       const response = await axios.get<FriendsResponse>('http://localhost:3001/friend/me', {headers: {
-            Authorization: 'Bearer ' + state.auth.token
-        }})
+        const response = await axios.post<FriendsResponse>('http://localhost:3001/friend/me', {}, {
+            headers: {
+                Authorization: 'Bearer ' + state.auth.token,
+                'Content-Type': 'application/json',
+            }
+        });
+        
         if (response.data != null && response.data != undefined) {
             const users = response.data.friends.map((friend) => friend.user);
             setFriends(users);
         }
     }, [])
-
+    
     useEffect(() => {
-        //getGroups();
+        getGroups();
         getFriends();
-    }, [getFriends, state.auth.token])
-
+    }, [getFriends, getGroups])
+    
+    useEffect(() => {
+        chatErrors?.map((error) => {
+            toast({
+                title: 'Error!',
+                description: error,
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+                position: "top-right"
+            })
+        })
+    }, [chatErrors])
+    
     const socket = io("http://localhost:3001", {auth: {
         token: 'Bearer ' + state.auth.token
     }});
 
     socket.on("message", (message: string) => {
-        const currentMessages: string[] = testMessages;
+        const currentMessages: string[] = messages;
         currentMessages.push(message);
-        setTestMessages(currentMessages);
-        if (testMessages != null) {
+        setMessages(currentMessages);
+        if (messages != null) {
             setHasSent(true);
         }
         setHasSent(false);
     })
-
 
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
@@ -187,6 +187,7 @@ const Chat: React.FC<Props> = (props: Props) => {
         const roomResponse = await axios.post<Room>('http://localhost:3001/connect', {friend_id, room_type: 'private'}, {headers: {
             Authorization: 'Bearer ' + state.auth.token
         }})
+        console.log(roomResponse.data);
         if (roomResponse.data.name != null) {
 
             setRoom(roomResponse.data);
@@ -204,26 +205,51 @@ const Chat: React.FC<Props> = (props: Props) => {
         socket.emit('join-room', roomResponse.data.name);
     }
 
+    const connectoToGroupChat = async (room_id: number) => {
+        const roomResponse = await axios.post<Room>('http://localhost:3001/connect', {room_id, room_type: 'group'}, {headers: {
+            Authorization: 'Bearer ' + state.auth.token
+        }})
+        console.log(roomResponse.data);
+        if (roomResponse.data.name != null) {
+
+            setRoom(roomResponse.data);
+            setConnectedToRoom(true);
+            getChatHistory(roomResponse.data.id);
+            toast({
+                title: 'Connected',
+                description: "You are connected to the groupchat!",
+                status: 'success',
+                duration: 1000,
+                isClosable: true,
+                position: "top-right"
+            })
+        }
+        socket.emit('join-room', roomResponse.data.name);
+    }
+
     const handleAddFriend = async (e: React.SyntheticEvent) => {
         e.preventDefault();
 
-        const addFriendResponse = await axios.post('http://localhost:3001/friend/add', {
-            friend_id: friendId
-        }, {headers: {
-            Authorization: 'Bearer ' + state.auth.token
-        }})
+            axios.post('http://localhost:3001/friend/add', {
+                friend_id: friendId
+            }, {headers: {
+                Authorization: 'Bearer ' + state.auth.token
+            }}).then((response) => {
 
-        toast({
-            title: 'Friend added!',
-            description: addFriendResponse.data.message,
-            status: 'success',
-            duration: 9000,
-            isClosable: true,
-            position: "top-right"
-        })
-
-        console.log(addFriendResponse.data);
-
+                toast({
+                    title: 'Friend added!',
+                    description: response.data.message,
+                    status: 'success',
+                    duration: 9000,
+                    isClosable: true,
+                    position: "top-right"
+                })
+            }).catch((error) => {
+                const errors = error.response.data.errors.map((error: Error) => error.msg);
+                if (errors != null) {
+                    setChatErrors(errors);
+                }
+            })
     }
 
     const handleCheckbox = async (checked: boolean, userid: number) => {
@@ -259,19 +285,18 @@ const Chat: React.FC<Props> = (props: Props) => {
                                 <Divider mt={8} mb={8} />
                                 {
                                     groups.map((group) => {
-                                        return <MenuItem data-testid="group" p={6} mb={4} ml={4} width="90%" borderRadius={8} bg="#0077B6" _focus={{ background: "#CAF0F8" }}  onClick={() => {connectToChat(group.id); setConnectedFriend(group.group_name)}}>
+                                        return <MenuItem data-testid="group" p={6} mb={4} ml={4} width="90%" borderRadius={8} bg="#0077B6" _focus={{ background: "#CAF0F8" }}  onClick={() => {connectoToGroupChat(group.id); setConnectedFriend(group.group_name)}}>
                                             <Avatar mr={8} name={group.group_name} src="" />
                                             <Text fontSize='2xl'>{group.group_name}</Text>
                                         </MenuItem>
                                     })
                                 }
-
                                 <Center>
-                                
                                     {addFriendToggled ?
                                         <Center>
                                             <VStack>
                                                 <Text fontSize="xl">Insert your friend's ID!</Text>
+                                                <Text fontSize={14}>NB! Friend has to add you for you to chat with them!</Text>
                                                 <Input data-testid="friendid" width='80%' placeholder='ID' bg='white' size="lg" onChange={(event) => setFriendId(event.currentTarget.value)} />
                                                 <Button data-testid="addfriendsubmit" onClick={handleAddFriend}>Add</Button>
                                             </VStack>
@@ -281,9 +306,7 @@ const Chat: React.FC<Props> = (props: Props) => {
                       
                                 </Center>
                             </ScrollableFeed>
-                            
                         </Menu>
-                        
                     </Box>
                     <Spacer />
                     {connectedToRoom ? 
@@ -329,7 +352,7 @@ const Chat: React.FC<Props> = (props: Props) => {
                             
                         </HStack>
                         <ScrollableFeed>
-                            <MessageFeed messages={testMessages} />
+                            <MessageFeed messages={messages} />
                         </ScrollableFeed>
                         <form onSubmit={handleSubmit}>
                             <Input ml={10} width="80%" placeholder="Message...." bg="white" size="lg" value={message} onChange={(event) => setMessage(event.currentTarget.value)}/>
@@ -342,8 +365,6 @@ const Chat: React.FC<Props> = (props: Props) => {
                             </Center>
                     </Box>
                     } 
-                    
-                    
             </Flex>
         </div>
     )
