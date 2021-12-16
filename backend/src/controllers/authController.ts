@@ -9,6 +9,7 @@ interface RefreshTokenResponse {
     success: boolean,
     token?: string,
     user?: string,
+    id?: number
 }
 
 export const GetUsers = async (req: Request, res: Response) => {
@@ -51,7 +52,8 @@ export const RefreshToken = async (req: Request, res: Response) => {
         const response: RefreshTokenResponse = {
             success: false,
             token: null,
-            user: null
+            user: null,
+            id: null
         }
         res.send(response);
     }
@@ -60,6 +62,7 @@ export const RefreshToken = async (req: Request, res: Response) => {
         success: true,
         token: sign(decoded, process.env.JWT_SECRET),
         user: decoded.username,
+        id: decoded.id
     }
 
     res.send(response);

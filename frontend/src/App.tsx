@@ -3,8 +3,7 @@ import {
   ChakraProvider,
   theme,
   Flex,
-  Center,
-  Text
+  Center
 } from "@chakra-ui/react"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {Context} from "./store/Index"
@@ -12,7 +11,6 @@ import {loginUser} from "../src/store/actions";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Chat from "./pages/Chat";
-import TestChat from "./pages/TestChat";
 import Navbar from "./components/Navbar";
 import axios from "axios";
 import PrivateRoute from "./components/PrivateRoute";
@@ -28,17 +26,15 @@ const App: React.FC = () => {
   const getRefreshToken = async () => {
     const response = await axios.get("http://localhost:3001/refresh_token", {withCredentials: true});
 
-    console.log(response.data);
-    
     const refreshToken = {
       token: response.data.token,
-      user: response.data.user
+      user: response.data.user,
+      id: response.data.id
     }
 
     if (response.data.success = "true") {
       dispatch(loginUser(refreshToken));
       setIsLoggedIn(true);
-      console.log(refreshToken);
     }
 
     if (response.data.user == null || response.data.user == undefined) {
@@ -67,7 +63,6 @@ const App: React.FC = () => {
     return;
   }
 
-
   return (
     <div>
        <ChakraProvider theme={theme}>
@@ -90,21 +85,11 @@ const App: React.FC = () => {
                 <PrivateRoute isLoggedIn={isLoggedIn}>
                   <Profile />
                 </PrivateRoute>} />
-            <Route 
-              path="/testchat" 
-              element={
-                <PrivateRoute isLoggedIn={isLoggedIn}>
-                  <TestChat />
-                </PrivateRoute>} />
           </Routes>
           </BrowserRouter>
       </ChakraProvider>
     </div>
-
-   
   )
-
-  
 }
 
 export default App;

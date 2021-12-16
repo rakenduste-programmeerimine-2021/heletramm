@@ -2,7 +2,7 @@ import React from 'react';
 import { Flex, Tag, Text } from "@chakra-ui/react"
 
 interface MessageProps {
-    message: string
+  message: string
 }
 
 const Message: React.FC<MessageProps> = ({message}) => {

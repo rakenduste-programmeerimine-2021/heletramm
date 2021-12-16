@@ -6,7 +6,7 @@ import * as groupMiddleware from '../middleware/groupMiddleware';
 const router = express.Router();
 
 router.post('/create', authMiddleware, groupMiddleware.PrepareUsers, groupController.CreateGroup)
-router.get('/me', authMiddleware, groupController.MyGroups)
+router.post('/me', authMiddleware, groupController.MyGroups)
 router.put('/add', authMiddleware, groupController.AddToGroup)
 
 export default router;

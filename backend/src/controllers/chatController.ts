@@ -11,7 +11,6 @@ export const userDisconnected = (reason: string) => {
     console.log(`User disconnected, reason: ${reason}`);
 }
 
-
 export const userMessage = (socket: Socket, room: Room, message: string) => {
     socket.to(room.name).emit('message', message);
     //Save message to database

@@ -22,8 +22,6 @@ export const AddFriend = async (req: Request, res: Response, next: NextFunction)
     const friendToAdd = await userRepository.findOne({id: friend_id});
     if (!friendToAdd) throw new Error('');
 
-
-
     const friendEntry = new Friend();
 
     friendEntry.friend_of = me;

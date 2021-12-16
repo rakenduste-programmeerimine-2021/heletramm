@@ -1,16 +1,12 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Index, { Context } from '../store/Index';
-import { register } from "../serviceWorker";
 import Navbar, {Props} from "../components/Navbar";
-import { useNavigate } from "react-router-dom"
-import { on } from "events";
 
 const mockedUsedNavigate = jest.fn();
 const mockedUsedHref = jest.fn();
 const mockedUsedLocation = jest.fn();
 const mockedUsedResolvedPath = jest.fn();
-
 
 jest.mock('react-router', () => ({
    ...jest.requireActual('react-router-dom') as any,

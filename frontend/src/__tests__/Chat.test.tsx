@@ -9,8 +9,6 @@ export function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.Moc
   return fn as jest.MockedFunction<T>;
 }
 
-// const getFriendsMock = mockFunction(_getFriends);
-
 function renderChat (props: Partial<Props> = {}) {
   const defaultProps = {
     onRenderingChat() {
@@ -51,22 +49,3 @@ test("Loads chat window properly", async () => {
 
   expect(welcomeMessage).toHaveTextContent("Click on one of your friends or groups to chat with them!");
 })
-
-// test("Get friends mock", async () => {
-//   renderChat();
-
-//   getFriendsMock.mockResolvedValue([
-//     {
-//       id: 5,
-//       username: "testname",
-//       email: "testname@gmail.com",
-//       password: "1234"
-//     },
-//     {
-//       id: 6,
-//       username: "secondtestname",
-//       email: "secondtestname@gmail.com",
-//       password: "1234"
-//     }
-//   ]);
-// })
