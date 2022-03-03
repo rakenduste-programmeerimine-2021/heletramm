@@ -1,6 +1,6 @@
 # Heletramm
 
-Live chat app, mis on suunatud developeritele ning on krüpteeritud. Funktsionaalsuseks on 1-1 suhtlus ning grupi põhine suhtlus. Grupi loomisel on võimalik grupi loojal hallata erinevaid channeleid ning grupis olevaid inimesi. Lisafunktsioonidena on plaanis grupijuhil lasta määrata töötajatele ülesandeid ja nendele kehtivaid tähtaegu.
+Reaalajas töötav suhtlusrakendus, mis on suunatud arendajatele ning on krüpteeritud. Funktsionaalsuseks on 1-1 suhtlus ning grupi põhine suhtlus. Grupi loomisel on võimalik grupi loojal hallata erinevaid kanaleid ning grupis olevaid inimesi. Lisafunktsioonidena on plaanis grupijuhil lasta määrata töötajatele ülesandeid ja nendele kehtivaid tähtaegu.
 
 ## Autorid
 ***Martin Kilgi, Mait Jurask***
@@ -39,18 +39,8 @@ Igal lehel kaasaskäiv sidebar, millelt saad valida gruppi/sõpra, kellega veste
 
 1. Reaalajaline
 1. Krüpteeritud suhtlus
-1. Attaching images and files to chat
 1. Piltide ja failide lisamis võimalus
 
 ### Group chat/channel
 
 Grupi suhtlus kanal.
-
-##### Funktsionaalsused
-
-1. Real time
-1. Encryption
-1. View group members
-1. Message sender info
-1. Up and coming deadlines set by group owner
-1. Attaching images and files to chat
